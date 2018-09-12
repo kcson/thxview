@@ -1,0 +1,58 @@
+# Routes Config
+#
+# This file defines all application routes (Higher priority routes first)
+#
+
+module:testrunner
+# module:jobs
+
+
+GET     /                                       App.Index
+GET     /login                                  App.Login
+POST    /auth                                   App.CreateSession
+GET     /logout                                 App.DeleteSession
+
+GET     /dashboard                              App.Dashboard
+POST    /dashboard/activeuser                   Dashboard.ActiveUser
+POST    /dashboard/pageview                     Dashboard.PageView
+POST    /dashboard/conversion                   Dashboard.Conversion
+POST    /dashboard/purchase                     Dashboard.Purchase
+POST    /dashboard/toppage                      Dashboard.TopPage
+POST    /dashboard/inflow                       Dashboard.Inflow
+POST    /dashboard/location                     Dashboard.Location
+
+POST    /information/summary/os                 Information.SummaryOS
+POST    /information/summary/browser            Information.SummaryBrowser
+POST    /information/traffic_source             Information.TrafficSource
+POST    /information/os                         Information.OS
+POST    /information/browser                    Information.Browser
+POST    /information/location                   Information.Location
+
+POST    /activity/summary/visit_user            Activity.SummaryVisitUser
+POST    /activity/summary/visit_change          Activity.SummaryVisitChange
+POST    /activity/summary/top_page              Activity.SummaryTopPage
+POST    /activity/summary/sign_up               Activity.SummarySignUp
+POST    /activity/summary/purchase              Activity.SummaryPurchase
+POST    /activity/page_view                     Activity.PageView
+
+POST    /log/search                             Log.SearchLog
+
+POST    /email/general                          Email.SearchGeneral
+POST    /email/maritime                         Email.SearchMaritime
+
+# Ignore favicon requests
+GET     /favicon.ico                            404
+
+# Map static resources from the /app/public folder to the /public path
+GET     /public/*filepath                       Static.Serve("public")
+
+# Catch all, this will route any request into the controller path
+#
+#                    **** WARNING ****
+# Enabling this exposes any controller and function to the web.
+# ** This is a serious security issue if used online **
+#
+# For rapid development uncomment the following to add new controller.action endpoints
+# without having to add them to the routes table.
+GET      /:controller/:action                    Common.Render
+GET      /:controller                            Common.Render
