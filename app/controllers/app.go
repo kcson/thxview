@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/revel/revel"
 	"fmt"
+	"strings"
 )
 
 type App struct {
@@ -34,6 +35,11 @@ func (c App) CreateSession() revel.Result {
 		c.Session["authKey"] = "authKey"
 		c.Session["userName"] = username.(string)
 		result["auth"] = "success"
+		if strings.Compare(username.(string), "admin") == 0 {
+			result["role"] = 1
+		} else {
+			result["role"] = 2
+		}
 		//return c.Redirect(App.Index)
 	} else {
 		result["auth"] = "fail"
