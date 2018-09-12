@@ -16,7 +16,7 @@ export default {
     },
     {
       //title: true,
-      name: 'User Information',
+      name: messages.common_user_information,
       url: '/information',
       icon: 'icon-people',
       //variant: 'success',
@@ -52,7 +52,7 @@ export default {
       divider: true,
     },
     {
-      name: 'User Activity',
+      name: messages.common_user_activity,
       url: '/activity',
       icon: 'icon-people',
       children: [
@@ -84,7 +84,7 @@ export default {
       ],
     },
     {
-      name: 'Access Log',
+      name: messages.access_log,
       url: '/log',
       icon: 'icon-layers',
       badge: {
@@ -93,7 +93,7 @@ export default {
       },
     },
     {
-      name: 'Report',
+      name: messages.report,
       url: '/report',
       icon: 'icon-note',
       children: [
@@ -110,7 +110,7 @@ export default {
       ],
     },
     {
-      name: 'Settings',
+      name: messages.settings,
       url: '/settings',
       icon: 'icon-settings',
       children: [

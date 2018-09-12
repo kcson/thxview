@@ -25,7 +25,7 @@ const routes = [
   {path: '/', exact: true, name: 'Home', component: Full},
   {path: '/dashboard', name: messages.common_dashboard, component: Dashboard},
 
-  {path: '/information', exact: true, name: 'User Information', component: InformationSummary},
+  {path: '/information', exact: true, name: messages.common_user_information, component: InformationSummary},
   {path: '/information/summary', name: 'Overview', component: InformationSummary},
   {path: '/information/traffic_source', name: 'Traffic Source', component: TrafficSource},
   {path: '/information/os', name: 'OS', component: Os},
@@ -33,21 +33,21 @@ const routes = [
   {path: '/information/location', name: 'User Locations', component: Location},
 
 
-  {path: '/activity', exact: true, name: 'User Activity', component: ActivitySummary},
+  {path: '/activity', exact: true, name: messages.common_user_activity, component: ActivitySummary},
   {path: '/activity/summary', name: 'Overview', component: ActivitySummary},
   {path: '/activity/pageview', name: 'Page views', component: PageView},
   {path: '/activity/flow', name: 'Activity Flow', component: ActivityFlow},
   {path: '/activity/conversion', name: 'Conversions', component: Conversion},
   {path: '/activity/purchase', name: 'Purchases', component: Purchase},
 
-  {path: '/log', exact: true, name: 'Access Log', component: Log},
+  {path: '/log', exact: true, name: messages.access_log, component: Log},
 
-  {path: '/report', exact: true, name: 'Report', component: ReportMgmt},
+  {path: '/report', exact: true, name: messages.report, component: ReportMgmt},
   {path: '/report/generate', name: 'Custom Report', component: ReportGenerate},
   {path: '/report/mgmt', exact: true, name: 'Management', component: ReportMgmt},
 
 
-  {path: '/settings', exact: true, name: 'Settings', component: SettingsPage},
+  {path: '/settings', exact: true, name: messages.settings, component: SettingsPage},
   //{path: '/settings/conversion', exact: true, name: '전환 페이지 관리', component: SettingsConversion},
   {path: '/settings/page', name: 'Manage Page', component: SettingsPage},
   //{path: '/settings/dashboard', name: '대시보드 관리', component: EmailMaritime}

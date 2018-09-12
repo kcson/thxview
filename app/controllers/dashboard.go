@@ -300,6 +300,14 @@ func (d Dashboard) Purchase() revel.Result {
 	pnBucket, _ := resultAggs.Aggregations.Nested("purchase_nested")
 
 	pBucketItems, _ := pnBucket.Aggregations.Terms("purchase")
+	if pBucketItems == nil {
+		result["purchase"] = purchase
+		result["purchase_count"] = purchaseCount
+		result["purchase_price"] = purchasePrice
+
+		return d.RenderJSON(result)
+	}
+
 	pBuckets := pBucketItems.Buckets
 	for _, pBucket := range pBuckets {
 		purchaseMap := make(map[string]interface{})
