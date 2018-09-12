@@ -37,8 +37,9 @@ class Login extends Component {
         (response) => {
           console.log(response)
           if(response.data.auth === 'success') {
-            sessionStorage.userid = this.state.username
-            sessionStorage.username = this.state.username
+            sessionStorage.userid = this.state.username;
+            sessionStorage.username = this.state.username;
+            sessionStorage.role = response.data.role;
             this.props.history.push('/');
           }
         },
