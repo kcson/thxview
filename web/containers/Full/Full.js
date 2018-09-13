@@ -26,6 +26,18 @@ class Full extends Component {
 
   render() {
     console.log(this.props.location);
+    const role = sessionStorage.role;
+    const items =[];
+    navigation.items.map(d => {
+      if(d.role) {
+        if(d.role.includes(Number(role))) {
+          console.log(d)
+          items.push(d);
+        }
+      }
+    });
+    const nav = {items};
+
     return (
         <div className="app">
           <AppHeader fixed>
@@ -35,7 +47,7 @@ class Full extends Component {
             <AppSidebar fixed display="lg">
               <AppSidebarHeader/>
               <AppSidebarForm/>
-              <AppSidebarNav navConfig={navigation} {...this.props} />
+              <AppSidebarNav navConfig={nav} {...this.props} />
               <AppSidebarFooter/>
               <AppSidebarMinimizer/>
             </AppSidebar>

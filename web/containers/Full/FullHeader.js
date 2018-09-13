@@ -36,6 +36,9 @@ class FullHeader extends Component {
   render() {
     // eslint-disable-next-line
     const {siteToggle} = this.state;
+    if(!sessionStorage.userid) {
+      this.props.history.push('/login');
+    }
 
     return (
         <React.Fragment>

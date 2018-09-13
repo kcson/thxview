@@ -23,9 +23,9 @@ import messages from "./views/Util/Messages";
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   {path: '/', exact: true, name: 'Home', component: Full},
-  {path: '/dashboard', name: messages.common_dashboard, component: Dashboard},
+  {path: '/dashboard', name: messages.dashboard, component: Dashboard},
 
-  {path: '/information', exact: true, name: messages.common_user_information, component: InformationSummary},
+  {path: '/information', exact: true, name: messages.user_information, component: InformationSummary},
   {path: '/information/summary', name: 'Overview', component: InformationSummary},
   {path: '/information/traffic_source', name: 'Traffic Source', component: TrafficSource},
   {path: '/information/os', name: 'OS', component: Os},
@@ -33,7 +33,7 @@ const routes = [
   {path: '/information/location', name: 'User Locations', component: Location},
 
 
-  {path: '/activity', exact: true, name: messages.common_user_activity, component: ActivitySummary},
+  {path: '/activity', exact: true, name: messages.user_activity, component: ActivitySummary},
   {path: '/activity/summary', name: 'Overview', component: ActivitySummary},
   {path: '/activity/pageview', name: 'Page views', component: PageView},
   {path: '/activity/flow', name: 'Activity Flow', component: ActivityFlow},

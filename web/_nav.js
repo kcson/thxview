@@ -3,9 +3,10 @@ import messages from "./views/Util/Messages";
 export default {
   items: [
     {
-      name: messages.common_dashboard,
+      name: messages.dashboard,
       url: '/dashboard',
       icon: 'icon-speedometer',
+      role: [2],
       badge: {
         variant: 'info',
         //text: 'NEW',
@@ -16,9 +17,10 @@ export default {
     },
     {
       //title: true,
-      name: messages.common_user_information,
+      name: messages.user_information,
       url: '/information',
       icon: 'icon-people',
+      role: [2],
       //variant: 'success',
       children: [
         {
@@ -52,9 +54,10 @@ export default {
       divider: true,
     },
     {
-      name: messages.common_user_activity,
+      name: messages.user_activity,
       url: '/activity',
       icon: 'icon-people',
+      role: [2],
       children: [
         {
           name: 'Overview',
@@ -91,11 +94,13 @@ export default {
         variant: 'info',
         //text: 'NEW',
       },
+      role: [2],
     },
     {
       name: messages.report,
       url: '/report',
       icon: 'icon-note',
+      role: [2],
       children: [
         {
           name: 'Custom Report',
@@ -113,6 +118,7 @@ export default {
       name: messages.settings,
       url: '/settings',
       icon: 'icon-settings',
+      role: [2],
       children: [
         // {
         //   name: '전환 페이지 관리',
@@ -123,6 +129,29 @@ export default {
           name: 'Manage Page',
           url: '/settings/page',
           icon: 'icon-book-open',
+        },
+        // {
+        //   name: '대시보드 관리',
+        //   url: '/settings/dashboard',
+        //   icon: 'icon-user',
+        // },
+      ],
+    },
+    {
+      name: messages.settings,
+      url: '/settings',
+      icon: 'icon-settings',
+      role: [1],
+      children: [
+        {
+            name: messages.settings_manage_site,
+            url: '/settings/conversion',
+            icon: 'icon-magnifier',
+        },
+        {
+            name: messages.settings_manage_admin,
+            url: '/settings/page',
+            icon: 'icon-book-open',
         },
         // {
         //   name: '대시보드 관리',

@@ -2,20 +2,30 @@ import LocalizedStrings from 'react-localization';
 
 let messages = new LocalizedStrings({
   en: {
-    common_dashboard: "Dashboard",
-    common_user_information: "User Information",
-    common_user_activity: "User Activity",
+    dashboard: "Dashboard",
+    user_information: "User Information",
+    user_activity: "User Activity",
+
     access_log: "Access Log",
+
     report: "Report",
-    settings: "Settings"
+
+    settings: "Settings",
+    settings_manage_site: "Manage Sites",
+    settings_manage_admin: "Manage Administrator"
   },
   ko: {
-    common_dashboard: "대시보드",
-    common_user_information: "사용자 특성 분석",
-    common_user_activity: "사용자 행동 분석",
+    dashboard: "대시보드",
+    user_information: "사용자 특성 분석",
+    user_activity: "사용자 행동 분석",
+
     access_log: "접근 로그",
+
     report: "보고서",
-    settings: "설정"
+
+    settings: "설정",
+    settings_manage_site: "사이트 관리",
+    settings_manage_admin: "관리자 관리"
   }
 });
 

@@ -40,7 +40,7 @@ class ActiveLocation extends Component {
 
   componentWillUnmount() {
     if (this.locationTimer !== null) {
-      clearInterval(this.browserTimer);
+      clearInterval(this.locationTimer);
     }
   }
 
