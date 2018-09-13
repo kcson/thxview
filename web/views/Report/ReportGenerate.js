@@ -26,8 +26,10 @@ import moment from 'moment';
 import axios from "axios";
 import Widget04 from '../Widgets/Widget04';
 import * as HttpStatus from "http-status-codes/index";
-import html2canvas from 'html2canvas';
-//import * as jsPDF from 'jspdf'
+import domtoimage from 'dom-to-image';
+import DatePicker from 'react-datepicker';
+
+const jsPDF = require('jspdf');
 
 const brandPrimary = '#20a8d8';
 const brandSuccess = '#4dbd74';
@@ -139,6 +141,8 @@ class ReportGenerate extends Component {
     this.toggle = this.toggle.bind(this);
 
     this.state = {
+      fromDate: moment(new Date()),
+      toDate: moment(new Date()),
       dropdownOpen: false,
       toDay: moment(new Date()).format('YYYY-MM-DD'),
       visitUserInterval: 'Day',
@@ -633,19 +637,24 @@ class ReportGenerate extends Component {
   }
 
   exportPdf = () => {
-    const jsPDF = require('jspdf');
     const pdf = document.getElementById("exportPdf");
-
-    html2canvas(pdf).then((canvas) => {
-      const img = canvas.toDataURL('image/png');
-
-      const jsPdf = jsPDF("p", "mm", "a3");
-      let width = jsPdf.internal.pageSize.getWidth();
-      let height = jsPdf.internal.pageSize.getHeight();
-      jsPdf.addImage(img, 'PNG', 5, 5, width-10, height-10);
-      jsPdf.save("report.pdf");
-    })
+    domtoimage.toPng(pdf, {quality: 1, bgcolor: 'white', width: 1263, height: 1240}).then((dataUrl) => {
+      const pdf_instance = new jsPDF('p', 'mm', 'a3');
+      let width = pdf_instance.internal.pageSize.getWidth();
+      let height = pdf_instance.internal.pageSize.getHeight();
+      pdf_instance.addImage(dataUrl, 'png', 5, 5, width - 10, height - 10);
+      pdf_instance.save("report.pdf");
+    });
   };
+
+  handleFromDateChange = (date) => {
+    this.setState({fromDate: date})
+  };
+
+  handleToDateChange = (date) => {
+    this.setState({toDate: date})
+  };
+
 
   render() {
     const options = [
@@ -653,7 +662,7 @@ class ReportGenerate extends Component {
       {value: '2', label: 'PlaSkin Plus'},
       {value: '3', label: 'PlaBeau'}
     ];
-    const {visitUserInterval, visitChangeInterval, pageViewInterval, signupInterval, purchaseInterval, visitUser, visitChangeChart, signupChart, purchaseChart} = this.state;
+    const {visitUserInterval, visitChangeInterval, pageViewInterval, purchaseInterval, visitUser, visitChangeChart, fromDate, toDate} = this.state;
     return (
         <div className="animated fadeIn" id="exportPdf">
           <Row>
@@ -675,9 +684,9 @@ class ReportGenerate extends Component {
                     </FormGroup>
                     <FormGroup className="pr-1">
                       <Label htmlFor="exampleInputName2" className="pr-1">Report for User Activity</Label>
-                      <Input type="date" id="exampleInputName2" required/>
+                      <DatePicker className="form-control" selected={fromDate} onChange={this.handleFromDateChange} dateFormat="YYYY-MM-DD"/>
                       ~
-                      <Input type="date" id="exampleInputName2" required/>
+                      <DatePicker className="form-control" selected={toDate} onChange={this.handleToDateChange} dateFormat="YYYY-MM-DD"/>
                     </FormGroup>
                     <FormGroup className="pr-1">
                       <Label htmlFor="exampleInputEmail2" className="pr-1">Description</Label>
@@ -691,7 +700,7 @@ class ReportGenerate extends Component {
                         <Select isMulti options={options} defaultValue={{value: '1', label: 'PlaSkin'}}/>
                       </div>
                     </FormGroup>
-                    <Button type="submit" size="sm" color="primary" className="mr-1"  style={{marginLeft: 'auto'}}><i
+                    <Button type="submit" size="sm" color="primary" className="mr-1" style={{marginLeft: 'auto'}}><i
                         className="fa fa-dot-circle-o"></i>Create & View</Button>
                     <Button type="submit" size="sm" color="primary" className="mr-1"><i className="fa fa-dot-circle-o"></i>Add Report</Button>
                     <Button outline={true} size="sm" color="primary" onClick={this.exportPdf}><i className="fa fa-file-pdf-o"></i>Save PDF</Button>
