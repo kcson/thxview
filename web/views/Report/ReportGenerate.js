@@ -637,8 +637,8 @@ class ReportGenerate extends Component {
   }
 
   exportPdf = () => {
-    const pdf = document.getElementById("exportPdf");
-    domtoimage.toPng(pdf, {quality: 1, bgcolor: 'white', width: 1263, height: 1240}).then((dataUrl) => {
+    const pdf = document.getElementById("exportReport");
+    domtoimage.toPng(pdf, {quality: 1, bgcolor: 'white', width: 1263, height: 1300}).then((dataUrl) => {
       const pdf_instance = new jsPDF('p', 'mm', 'a3');
       let width = pdf_instance.internal.pageSize.getWidth();
       let height = pdf_instance.internal.pageSize.getHeight();
@@ -664,7 +664,7 @@ class ReportGenerate extends Component {
     ];
     const {visitUserInterval, visitChangeInterval, pageViewInterval, purchaseInterval, visitUser, visitChangeChart, fromDate, toDate} = this.state;
     return (
-        <div className="animated fadeIn" id="exportPdf">
+        <div className="animated fadeIn">
           <Row>
             <Col xs="12" lg="12">
               <Card style={{marginBottom: 15 + 'px'}}>
@@ -709,7 +709,7 @@ class ReportGenerate extends Component {
               </Card>
             </Col>
           </Row>
-
+<div id="exportReport">
           <Row>
             <Col xs="12" sm="4" lg="4">
               <Card className="text-white bg-info" style={{marginBottom: 0, height: 164 + 'px'}}>
@@ -887,6 +887,7 @@ class ReportGenerate extends Component {
               </Card>
             </Col>
           </Row>
+</div>
         </div>
     )
   }
