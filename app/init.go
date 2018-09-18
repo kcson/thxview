@@ -4,6 +4,7 @@ import (
 	"github.com/revel/revel"
 	"github.com/thxcloud/thxview_web/app/elasticsearch"
 	"fmt"
+	"github.com/thxcloud/thxview_web/app/scheduler"
 )
 
 var (
@@ -21,6 +22,10 @@ func InitDB() {
 		version, _ := elasticsearch.Client.ElasticsearchVersion("https://thxlab.com:9200")
 		fmt.Println("Elasticsearch version : " + version)
 	}
+}
+
+func InitScheduler() {
+	scheduler.ActiveFlowJob()
 }
 
 func init() {
@@ -45,6 +50,7 @@ func init() {
 	// ( order dependent )
 	// revel.OnAppStart(ExampleStartupScript)
 	revel.OnAppStart(InitDB)
+	revel.OnAppStart(InitScheduler)
 	// revel.OnAppStart(FillCache)
 }
 
