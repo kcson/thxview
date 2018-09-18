@@ -26,7 +26,8 @@ import moment from 'moment';
 import axios from "axios";
 import Widget04 from '../Widgets/Widget04';
 import * as HttpStatus from "http-status-codes/index";
-import domtoimage from 'dom-to-image';
+import html2canvas from 'html2canvas';
+//import domtoimage from 'dom-to-image';
 import DatePicker from 'react-datepicker';
 
 const jsPDF = require('jspdf');
@@ -637,14 +638,25 @@ class ReportGenerate extends Component {
   }
 
   exportPdf = () => {
-    const pdf = document.getElementById("exportReport");
-    domtoimage.toPng(pdf, {quality: 1, bgcolor: 'white', width: 1263, height: 1300}).then((dataUrl) => {
+    const exportReport = document.getElementById("exportReport");
+    html2canvas(exportReport).then(canvas => {
+      let png = canvas.toDataURL("image/png");
+
       const pdf_instance = new jsPDF('p', 'mm', 'a3');
+
       let width = pdf_instance.internal.pageSize.getWidth();
       let height = pdf_instance.internal.pageSize.getHeight();
-      pdf_instance.addImage(dataUrl, 'png', 5, 5, width - 10, height - 10);
+      pdf_instance.addImage(png, 'png', 5, 5, width - 10, height - 10);
       pdf_instance.save("report.pdf");
+
     });
+    // domtoimage.toPng(pdf, {quality: 1, bgcolor: 'white', width: 1263, height: 1300}).then((dataUrl) => {
+    //   const pdf_instance = new jsPDF('p', 'mm', 'a3');
+    //   let width = pdf_instance.internal.pageSize.getWidth();
+    //   let height = pdf_instance.internal.pageSize.getHeight();
+    //   pdf_instance.addImage(dataUrl, 'png', 5, 5, width - 10, height - 10);
+    //   pdf_instance.save("report.pdf");
+    // });
   };
 
   handleFromDateChange = (date) => {
@@ -709,185 +721,185 @@ class ReportGenerate extends Component {
               </Card>
             </Col>
           </Row>
-<div id="exportReport">
-          <Row>
-            <Col xs="12" sm="4" lg="4">
-              <Card className="text-white bg-info" style={{marginBottom: 0, height: 164 + 'px'}}>
-                <CardBody className="pb-0">
-                  <ButtonGroup className="float-right">
-                    <ButtonDropdown id='card1' isOpen={this.state.card1} toggle={() => {
-                      this.setState({card1: !this.state.card1});
-                    }}>
-                      <DropdownToggle caret className="p-0" color="transparent">
-                        {visitUserInterval}
-                      </DropdownToggle>
-                      <DropdownMenu right>
-                        <DropdownItem onClick={this.onDropDownClick} value='Day'>Day</DropdownItem>
-                        <DropdownItem onClick={this.onDropDownClick} value='Week'>Week</DropdownItem>
-                        <DropdownItem onClick={this.onDropDownClick} value='Month'>Month</DropdownItem>
-                      </DropdownMenu>
-                    </ButtonDropdown>
-                  </ButtonGroup>
-                  <h4 className="mb-0">{visitUser.total}</h4>
-                  <p>A Customer + A Member</p>
-                </CardBody>
-                <div className="chart-wrapper px-3" style={{height: '70px'}}>
-                  <Line data={cardChartData2} options={cardChartOpts2} height={70}/>
-                </div>
-              </Card>
-            </Col>
-            <Col xs="12" sm="4" lg="4">
-              <CardGroup className="mb-4">
-                <Widget04 icon="icon-people" color="info" header={visitUser.member} value={visitUser.mRatio}>A Member</Widget04>
-                <Widget04 icon="icon-user-follow" color="success" header={visitUser.customer} value={visitUser.cRatio}>A Customer</Widget04>
-              </CardGroup>
-            </Col>
-            <Col xs="12" sm="4" lg="4">
-              <CardGroup className="mb-4">
-                <Widget04 icon="icon-people" color="info" header={visitUser.return} value={visitUser.rRatio}>Returning Users</Widget04>
-                <Widget04 icon="icon-user-follow" color="success" header={visitUser.new} value={visitUser.nRatio}>New Users</Widget04>
-              </CardGroup>
-            </Col>
-          </Row>
-          <Row>
-            <Col xs="12" sm="12" lg="12">
-              <Card>
-                <CardHeader style={{height: 46 + 'px'}}>
-                  <Row>
-                    <Col sm="5">
-                      <span className="mb-0"><strong>A Customer + A Member</strong></span>
-                    </Col>
-                    <Col sm="7" className="d-none d-sm-inline-block">
-                      <ButtonToolbar className="float-right" aria-label="Toolbar with button groups">
-                        <ButtonGroup className="mr-3" aria-label="First group">
-                          <Button size='sm' color="outline-secondary" onClick={() => this.onVisitChangeBtnClick(1)}
-                                  active={visitChangeInterval === 1}>Day</Button>
-                          <Button size='sm' color="outline-secondary" onClick={() => this.onVisitChangeBtnClick(2)}
-                                  active={visitChangeInterval === 2}>Week</Button>
-                          <Button size='sm' color="outline-secondary" onClick={() => this.onVisitChangeBtnClick(3)}
-                                  active={visitChangeInterval === 3}>Month</Button>
-                        </ButtonGroup>
-                      </ButtonToolbar>
-                    </Col>
-                  </Row>
-                </CardHeader>
-                <CardBody>
-                  <div className="chart-wrapper" style={{height: 300 + 'px'}}>
-                    <Line data={visitChangeChart} options={mainChartOpts} height={300}/>
+          <div id="exportReport">
+            <Row>
+              <Col xs="12" sm="4" lg="4">
+                <Card className="text-white bg-info" style={{marginBottom: 0, height: 164 + 'px'}}>
+                  <CardBody className="pb-0">
+                    <ButtonGroup className="float-right">
+                      <ButtonDropdown id='card1' isOpen={this.state.card1} toggle={() => {
+                        this.setState({card1: !this.state.card1});
+                      }}>
+                        <DropdownToggle caret className="p-0" color="transparent">
+                          {visitUserInterval}
+                        </DropdownToggle>
+                        <DropdownMenu right>
+                          <DropdownItem onClick={this.onDropDownClick} value='Day'>Day</DropdownItem>
+                          <DropdownItem onClick={this.onDropDownClick} value='Week'>Week</DropdownItem>
+                          <DropdownItem onClick={this.onDropDownClick} value='Month'>Month</DropdownItem>
+                        </DropdownMenu>
+                      </ButtonDropdown>
+                    </ButtonGroup>
+                    <h4 className="mb-0">{visitUser.total}</h4>
+                    <p>A Customer + A Member</p>
+                  </CardBody>
+                  <div className="chart-wrapper px-3" style={{height: '70px'}}>
+                    <Line data={cardChartData2} options={cardChartOpts2} height={70}/>
                   </div>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
+                </Card>
+              </Col>
+              <Col xs="12" sm="4" lg="4">
+                <CardGroup className="mb-4">
+                  <Widget04 icon="icon-people" color="info" header={visitUser.member} value={visitUser.mRatio}>A Member</Widget04>
+                  <Widget04 icon="icon-user-follow" color="success" header={visitUser.customer} value={visitUser.cRatio}>A Customer</Widget04>
+                </CardGroup>
+              </Col>
+              <Col xs="12" sm="4" lg="4">
+                <CardGroup className="mb-4">
+                  <Widget04 icon="icon-people" color="info" header={visitUser.return} value={visitUser.rRatio}>Returning Users</Widget04>
+                  <Widget04 icon="icon-user-follow" color="success" header={visitUser.new} value={visitUser.nRatio}>New Users</Widget04>
+                </CardGroup>
+              </Col>
+            </Row>
+            <Row>
+              <Col xs="12" sm="12" lg="12">
+                <Card>
+                  <CardHeader style={{height: 46 + 'px'}}>
+                    <Row>
+                      <Col sm="5">
+                        <span className="mb-0"><strong>A Customer + A Member</strong></span>
+                      </Col>
+                      <Col sm="7" className="d-none d-sm-inline-block">
+                        <ButtonToolbar className="float-right" aria-label="Toolbar with button groups">
+                          <ButtonGroup className="mr-3" aria-label="First group">
+                            <Button size='sm' color="outline-secondary" onClick={() => this.onVisitChangeBtnClick(1)}
+                                    active={visitChangeInterval === 1}>Day</Button>
+                            <Button size='sm' color="outline-secondary" onClick={() => this.onVisitChangeBtnClick(2)}
+                                    active={visitChangeInterval === 2}>Week</Button>
+                            <Button size='sm' color="outline-secondary" onClick={() => this.onVisitChangeBtnClick(3)}
+                                    active={visitChangeInterval === 3}>Month</Button>
+                          </ButtonGroup>
+                        </ButtonToolbar>
+                      </Col>
+                    </Row>
+                  </CardHeader>
+                  <CardBody>
+                    <div className="chart-wrapper" style={{height: 300 + 'px'}}>
+                      <Line data={visitChangeChart} options={mainChartOpts} height={300}/>
+                    </div>
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
 
-          <Row>
-            <Col xs="12" sm="12" lg="12">
-              <Card>
-                <CardHeader style={{height: 46 + 'px'}}>
-                  <Row>
-                    <Col sm="5">
-                      <span className="mb-0"><strong>Top Popular Pages - All Users</strong></span>
-                    </Col>
-                    <Col sm="7" className="d-none d-sm-inline-block">
-                      <ButtonToolbar className="float-right" aria-label="Toolbar with button groups">
-                        <ButtonGroup className="mr-3" aria-label="First group">
-                          <Button size='sm' color="outline-secondary" onClick={() => this.onPageViewBtnClick(1)}
-                                  active={pageViewInterval === 1}>Day</Button>
-                          <Button size='sm' color="outline-secondary" onClick={() => this.onPageViewBtnClick(2)}
-                                  active={pageViewInterval === 2}>Week</Button>
-                          <Button size='sm' color="outline-secondary" onClick={() => this.onPageViewBtnClick(3)}
-                                  active={pageViewInterval === 3}>Month</Button>
-                        </ButtonGroup>
-                      </ButtonToolbar>
-                    </Col>
-                  </Row>
-                </CardHeader>
-                <CardBody>
-                  <div className="chart-wrapper">
-                    <Table responsive style={{margin: 0}}>
+            <Row>
+              <Col xs="12" sm="12" lg="12">
+                <Card>
+                  <CardHeader style={{height: 46 + 'px'}}>
+                    <Row>
+                      <Col sm="5">
+                        <span className="mb-0"><strong>Top Popular Pages - All Users</strong></span>
+                      </Col>
+                      <Col sm="7" className="d-none d-sm-inline-block">
+                        <ButtonToolbar className="float-right" aria-label="Toolbar with button groups">
+                          <ButtonGroup className="mr-3" aria-label="First group">
+                            <Button size='sm' color="outline-secondary" onClick={() => this.onPageViewBtnClick(1)}
+                                    active={pageViewInterval === 1}>Day</Button>
+                            <Button size='sm' color="outline-secondary" onClick={() => this.onPageViewBtnClick(2)}
+                                    active={pageViewInterval === 2}>Week</Button>
+                            <Button size='sm' color="outline-secondary" onClick={() => this.onPageViewBtnClick(3)}
+                                    active={pageViewInterval === 3}>Month</Button>
+                          </ButtonGroup>
+                        </ButtonToolbar>
+                      </Col>
+                    </Row>
+                  </CardHeader>
+                  <CardBody>
+                    <div className="chart-wrapper">
+                      <Table responsive style={{margin: 0}}>
+                        <colgroup>
+                          <col width="10%"/>
+                          <col/>
+                          <col width="10%"/>
+                          <col width="10%"/>
+                          <col width="10%"/>
+                          <col width="30%"/>
+                        </colgroup>
+                        <thead>
+                        <tr>
+                          <th>No</th>
+                          <th>Page Name</th>
+                          <th>Description</th>
+                          <th>Count</th>
+                          <th>Rate(%)</th>
+                          <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {this.renderTopPage()}
+                        </tbody>
+                      </Table>
+                    </div>
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col xs="12" sm="12" lg="12">
+                <Card>
+                  <CardHeader style={{height: 46 + 'px'}}>
+                    <Row>
+                      <Col sm="5">
+                        <span className="mb-0"><strong>Purchases</strong></span>
+                      </Col>
+                      <Col sm="7" className="d-none d-sm-inline-block">
+                        <ButtonToolbar className="float-right" aria-label="Toolbar with button groups">
+                          <ButtonGroup className="mr-3" aria-label="First group">
+                            <Button size='sm' color="outline-secondary" onClick={() => this.onPurchaseBtnClick(1)}
+                                    active={purchaseInterval === 1}>Day</Button>
+                            <Button size='sm' color="outline-secondary" onClick={() => this.onPurchaseBtnClick(2)}
+                                    active={purchaseInterval === 2}>Week</Button>
+                            <Button size='sm' color="outline-secondary" onClick={() => this.onPurchaseBtnClick(3)}
+                                    active={purchaseInterval === 3}>Month</Button>
+                          </ButtonGroup>
+                        </ButtonToolbar>
+                      </Col>
+                    </Row>
+                  </CardHeader>
+                  <CardBody>
+                    <Table striped bordered style={{tableLayout: 'fixed'}}>
                       <colgroup>
-                        <col width="10%"/>
+                        <col style={{width: '5%'}}/>
+                        <col style={{width: '25%'}}/>
                         <col/>
-                        <col width="10%"/>
-                        <col width="10%"/>
-                        <col width="10%"/>
-                        <col width="30%"/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
                       </colgroup>
                       <thead>
                       <tr>
-                        <th>No</th>
-                        <th>Page Name</th>
-                        <th>Description</th>
-                        <th>Count</th>
-                        <th>Rate(%)</th>
-                        <th></th>
+                        <th style={{verticalAlign: 'middle', padding: 6 + 'px', textAlign: 'center'}} rowSpan={2}>No</th>
+                        <th style={{verticalAlign: 'middle', padding: 6 + 'px', textAlign: 'center'}} rowSpan={2}>Item</th>
+                        <th style={{verticalAlign: 'middle', padding: 6 + 'px', textAlign: 'center'}} colSpan={2}>Type/User</th>
+                        <th style={{verticalAlign: 'middle', padding: 6 + 'px', textAlign: 'center'}} colSpan={2}>Type/Device</th>
+                        <th style={{verticalAlign: 'middle', padding: 6 + 'px', textAlign: 'center'}} rowSpan={2}>Amount($)</th>
+                      </tr>
+                      <tr>
+                        <th style={{verticalAlign: 'middle', padding: 6 + 'px', textAlign: 'center'}}>A Customer(%)</th>
+                        <th style={{verticalAlign: 'middle', padding: 6 + 'px', textAlign: 'center'}}>A Member(%)</th>
+                        <th style={{verticalAlign: 'middle', padding: 6 + 'px', textAlign: 'center'}}>PC</th>
+                        <th style={{verticalAlign: 'middle', padding: 6 + 'px', textAlign: 'center'}}>Mobile</th>
                       </tr>
                       </thead>
-                      <tbody>
-                      {this.renderTopPage()}
-                      </tbody>
+                      {this.renderPurchase()}
                     </Table>
-                  </div>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col xs="12" sm="12" lg="12">
-              <Card>
-                <CardHeader style={{height: 46 + 'px'}}>
-                  <Row>
-                    <Col sm="5">
-                      <span className="mb-0"><strong>Purchases</strong></span>
-                    </Col>
-                    <Col sm="7" className="d-none d-sm-inline-block">
-                      <ButtonToolbar className="float-right" aria-label="Toolbar with button groups">
-                        <ButtonGroup className="mr-3" aria-label="First group">
-                          <Button size='sm' color="outline-secondary" onClick={() => this.onPurchaseBtnClick(1)}
-                                  active={purchaseInterval === 1}>Day</Button>
-                          <Button size='sm' color="outline-secondary" onClick={() => this.onPurchaseBtnClick(2)}
-                                  active={purchaseInterval === 2}>Week</Button>
-                          <Button size='sm' color="outline-secondary" onClick={() => this.onPurchaseBtnClick(3)}
-                                  active={purchaseInterval === 3}>Month</Button>
-                        </ButtonGroup>
-                      </ButtonToolbar>
-                    </Col>
-                  </Row>
-                </CardHeader>
-                <CardBody>
-                  <Table striped bordered style={{tableLayout: 'fixed'}}>
-                    <colgroup>
-                      <col style={{width: '5%'}}/>
-                      <col style={{width: '25%'}}/>
-                      <col/>
-                      <col/>
-                      <col/>
-                      <col/>
-                      <col/>
-                    </colgroup>
-                    <thead>
-                    <tr>
-                      <th style={{verticalAlign: 'middle', padding: 6 + 'px', textAlign: 'center'}} rowSpan={2}>No</th>
-                      <th style={{verticalAlign: 'middle', padding: 6 + 'px', textAlign: 'center'}} rowSpan={2}>Item</th>
-                      <th style={{verticalAlign: 'middle', padding: 6 + 'px', textAlign: 'center'}} colSpan={2}>Type/User</th>
-                      <th style={{verticalAlign: 'middle', padding: 6 + 'px', textAlign: 'center'}} colSpan={2}>Type/Device</th>
-                      <th style={{verticalAlign: 'middle', padding: 6 + 'px', textAlign: 'center'}} rowSpan={2}>Amount($)</th>
-                    </tr>
-                    <tr>
-                      <th style={{verticalAlign: 'middle', padding: 6 + 'px', textAlign: 'center'}}>A Customer(%)</th>
-                      <th style={{verticalAlign: 'middle', padding: 6 + 'px', textAlign: 'center'}}>A Member(%)</th>
-                      <th style={{verticalAlign: 'middle', padding: 6 + 'px', textAlign: 'center'}}>PC</th>
-                      <th style={{verticalAlign: 'middle', padding: 6 + 'px', textAlign: 'center'}}>Mobile</th>
-                    </tr>
-                    </thead>
-                    {this.renderPurchase()}
-                  </Table>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
-</div>
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
+          </div>
         </div>
     )
   }
