@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/revel/revel"
-	"github.com/kcson/thxview_web/app/elasticsearch"
+	"github.com/thxcloud/thxview_web/app/elasticsearch"
 	"fmt"
 )
 

@@ -3,7 +3,7 @@ package controllers
 import (
 	"github.com/revel/revel"
 	"net/http"
-	"github.com/kcson/thxview_web/app/elasticsearch"
+	"github.com/thxcloud/thxview_web/app/elasticsearch"
 	"github.com/olivere/elastic"
 	"context"
 	"strings"
