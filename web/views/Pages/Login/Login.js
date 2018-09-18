@@ -49,9 +49,15 @@ class Login extends Component {
     )
   };
 
+  handleKeyPress = event => {
+    if (event.key === 'Enter') {
+      this.handleAuth();
+    }
+  };
+
   render() {
     return (
-        <div className="app flex-row align-items-center">
+        <div className="app flex-row align-items-center" onKeyPress={this.handleKeyPress}  tabIndex="0">
           <Container>
             <Row className="justify-content-center">
               <Col md="8">
