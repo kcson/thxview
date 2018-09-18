@@ -8,9 +8,10 @@ import (
 
 func ActiveFlowJob() {
 	fmt.Println("call ActiveFlowJob")
+	time := revel.Config.StringDefault("scheduler.activflow","00:30")
 
 	go func() {
-		gocron.Every(10).Seconds().Do(runJob)
+		gocron.Every(1).Day().At(time).Do(runJob)
 		<-gocron.Start()
 	}()
 }
