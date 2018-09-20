@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import {Doughnut, Line} from 'react-chartjs-2';
-import {Button, ButtonGroup, ButtonToolbar, Card, CardBody, CardHeader, Col, Progress, Row, Table} from 'reactstrap';
+import {Line} from 'react-chartjs-2';
+import {Button, ButtonGroup, ButtonToolbar, Card, CardBody, CardHeader, Col, Progress, Row} from 'reactstrap';
 import {scaleLinear} from "d3-scale";
 import moment from 'moment';
 import 'moment-timezone';
@@ -10,6 +10,10 @@ import Widget04 from '../Widgets/Widget04';
 import * as HttpStatus from "http-status-codes/index";
 import {numberWithCommas} from '../Util/CommonUtils';
 import ActiveLocation from "./ActiveLocation";
+import TopPage from "./TopPage";
+import TrafficSource from "./TrafficSource";
+import OS from "./OS";
+import Browser from "./Browser";
 
 const cityScale = scaleLinear()
     .domain([0, 37843000])
@@ -122,19 +126,10 @@ class Dashboard extends Component {
       purchaseCount: 0,
       purchasePrice: 0,
       purchase: null,
-      visitorTopPage: [],
-      memberTopPage: [],
-      inflowTopPage: [],
       visitorRatio: 0,
       memberRatio: 0,
       pcRatio: 0,
       mobileRatio: 0,
-      osChartDetail: [],
-      osChartOption: this.doughnut_os_options,
-      osChartData: {
-        labels: [],
-        datasets: []
-      },
       browserChartData: {
         labels: [],
         datasets: []
@@ -147,32 +142,10 @@ class Dashboard extends Component {
     };
   }
 
- doughnut_os_options = {
-    onClick: (event, items) => {
-      console.log(items.length);
-      if (items.length == 0) {
-        return;
-      }
-      const {osChartDetail} = this.state;
-      const item = items[0];
-
-      const chartData = osChartDetail[item._index];
-      this.setState({
-        osChartData: chartData, osChartOption: {
-          onClick: (event, items) => {
-          }
-        }
-      });
-    }
-  };
-
   activeUSerTimer = null;
   pageViewTimer = null;
   conversionTimer = null;
   purchaseTimer = null;
-  topPageTimer = null;
-  inflowTimer = null;
-  osTimer = null;
   browserTimer = null;
 
   componentDidMount() {
@@ -180,9 +153,6 @@ class Dashboard extends Component {
     this.fetchPageView();
     this.fetchConversion();
     this.fetchPurchase();
-    this.fetchTopPage();
-    this.fetchInflow();
-    this.fetchOS();
     this.fetchBrowser();
 
     this.activeUSerTimer = setInterval(() => {
@@ -199,18 +169,6 @@ class Dashboard extends Component {
 
     this.purchaseTimer = setInterval(() => {
       this.fetchPurchase();
-    }, 20 * 1000);
-
-    this.topPageTimer = setInterval(() => {
-      this.fetchTopPage();
-    }, 20 * 1000);
-
-    this.inflowTimer = setInterval(() => {
-      this.fetchInflow();
-    }, 20 * 1000);
-
-    this.osTimer = setInterval(() => {
-      this.fetchOS();
     }, 20 * 1000);
 
     this.browserTimer = setInterval(() => {
@@ -237,18 +195,6 @@ class Dashboard extends Component {
 
     if (this.purchaseTimer !== null) {
       clearInterval(this.purchaseTimer);
-    }
-
-    if (this.topPageTimer !== null) {
-      clearInterval(this.topPageTimer);
-    }
-
-    if (this.inflowTimer !== null) {
-      clearInterval(this.inflowTimer);
-    }
-
-    if (this.osTimer !== null) {
-      clearInterval(this.osTimer);
     }
 
     if (this.browserTimer !== null) {
@@ -321,161 +267,6 @@ class Dashboard extends Component {
         }
     )
 
-  }
-
-
-  fetchOS() {
-    const doughnut_os = {
-      labels: ['No data.'],
-      datasets: [{
-        data: [1],
-        backgroundColor: [],
-        hoverBackgroundColor: []
-      }]
-    };
-
-    let toDay = moment(new Date()).format('YYYY-MM-DD');
-    let fromDate = toDay + '||/d';
-    let toDate = toDay + '||/d';
-
-    axios({
-      method: 'post',
-      url: '/information/summary/os',
-      data: {
-        fromDate: fromDate,
-        toDate: toDate,
-        timeZone: moment.tz.guess(),
-        format: ""
-      }
-    }).then(
-        (response) => {
-          console.log(response);
-          const detail = [];
-          const labels = [];
-          const data = [];
-          const backgroundColor = [];
-          const hoverBackgroundColor = [];
-          response.data.map((bucket, index) => {
-            if (bucket.count == 0) {
-              return
-            }
-            const os_detail = {
-              labels: [],
-              datasets: [{
-                data: [],
-                backgroundColor: [],
-                hoverBackgroundColor: []
-              }]
-            };
-            labels.push(bucket.name);
-            data.push(bucket.count);
-            const color = colorFamily[index % 15];
-            backgroundColor.push(color)
-            hoverBackgroundColor.push(color)
-
-            bucket.detail.map((detail, i) => {
-              os_detail.labels.push(detail.name)
-              os_detail.datasets[0].data.push(detail.count)
-              const detail_color = colorFamily[i % 15];
-              os_detail.datasets[0].backgroundColor.push(detail_color)
-              os_detail.datasets[0].hoverBackgroundColor.push(detail_color)
-            });
-            detail.push(os_detail);
-          });
-          if (data.length > 0) {
-            doughnut_os.labels = labels;
-            doughnut_os.datasets = [];
-            doughnut_os.datasets.push(
-                {
-                  data: data,
-                  backgroundColor: backgroundColor,
-                  hoverBackgroundColor: hoverBackgroundColor
-                }
-            );
-          }
-          this.setState({osChartData: doughnut_os, osChartDetail: detail, osChartOption: this.doughnut_os_options});
-        },
-        (err) => {
-          console.log(err);
-          if (err.response.status === HttpStatus.UNAUTHORIZED) {
-            this.props.history.push('/login');
-          }
-        }
-    )
-  }
-
-
-  fetchInflow() {
-    let toDay = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-
-    axios({
-      method: 'post',
-      url: '/dashboard/inflow',
-      data: {
-        fromDate: toDay,
-        toDate: toDay,
-        timeZone: moment.tz.guess(),
-        exclude: 'pla-skin'
-      }
-    }).then(
-        (response) => {
-          //console.log(response);
-          const inflowTotal = response.data.hits.total;
-          //
-          const inflowBuckets = response.data.aggregations.inflow_top.buckets;
-          inflowBuckets.map((row, i) => {
-            row.doc_ratio = inflowTotal == 0 ? 0 : (row.doc_count / inflowTotal * 100).toFixed(2);
-          });
-          console.log(inflowBuckets);
-
-          this.setState({
-            inflowTopPage: inflowBuckets
-          });
-        },
-        (err) => {
-          console.log(err);
-        }
-    )
-  }
-
-  fetchTopPage() {
-    let toDay = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-
-    axios({
-      method: 'post',
-      url: '/dashboard/toppage',
-      data: {
-        fromDate: toDay,
-        toDate: toDay,
-        timeZone: moment.tz.guess()
-      }
-    }).then(
-        (response) => {
-          //console.log(response);
-          //console.log(response.data.member_top.aggregations.member_top.buckets);
-          //console.log(response.data.visitor_top.aggregations.visitor_top.buckets);
-          const visitorTotal = response.data.visitor_top.hits.total;
-          const memberTotal = response.data.member_top.hits.total;
-
-          const visitorBuckets = response.data.visitor_top.aggregations.visitor_top.buckets;
-          visitorBuckets.map((row, i) => {
-            row.doc_ratio = visitorTotal == 0 ? 0 : (row.doc_count / visitorTotal * 100).toFixed(2);
-          });
-          console.log(visitorBuckets)
-          const memberBuckets = response.data.member_top.aggregations.member_top.buckets;
-          memberBuckets.map((row, i) => {
-            row.doc_ratio = memberTotal == 0 ? 0 : (row.doc_count / memberTotal * 100).toFixed(2);
-          });
-
-          this.setState({
-            visitorTopPage: visitorBuckets,
-            memberTopPage: memberBuckets
-          });
-        },
-        (err) => {
-          console.log(err);
-        }
-    )
   }
 
   fetchActiveUser() {
@@ -700,55 +491,6 @@ class Dashboard extends Component {
     )
   }
 
-  renderVisitorTopPage() {
-    const {visitorTopPage} = this.state;
-    const tdStyle = {textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}
-
-    return (
-        visitorTopPage.map((row, i) =>
-            <tr key={i}>
-              <td>{i + 1}</td>
-              <td title={row.key} style={tdStyle}>{row.key}</td>
-              <td>-</td>
-              <td>{row.doc_count}({row.doc_ratio})</td>
-            </tr>
-        )
-    )
-  }
-
-  renderMemberTopPage() {
-    const {memberTopPage} = this.state;
-    const tdStyle = {textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}
-
-    return (
-        memberTopPage.map((row, i) =>
-            <tr key={i}>
-              <td>{i + 1}</td>
-              <td title={row.key} style={tdStyle}>{row.key}</td>
-              <td>-</td>
-              <td>{row.doc_count}({row.doc_ratio})</td>
-            </tr>
-        )
-    )
-  }
-
-  renderInflowTopPage() {
-    const {inflowTopPage} = this.state;
-    const tdStyle = {textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}
-
-    return (
-        inflowTopPage.map((row, i) =>
-            <tr key={i}>
-              <td>{i + 1}</td>
-              <td title={row.key === "\"-\"" ? 'URL in browser' : row.key} style={tdStyle}>{row.key === "\"-\"" ? 'URL in bowser' : row.key}</td>
-              <td>{row.doc_count}</td>
-              <td>{row.doc_ratio}</td>
-              <td><Progress className="progress-sm mt-2" color="danger" value={row.doc_ratio}/></td>
-            </tr>
-        )
-    )
-  }
-
   procuctName = {
     1: 'PlaSkin',
     2: 'PlaSkin Plus',
@@ -822,8 +564,7 @@ class Dashboard extends Component {
   };
 
   render() {
-    const AnyReactComponent = ({ text }) => <div>{text}</div>;
-    const {visitUser, signupUser, signupRatio, purchaseCount, purchasePrice, visitorRatio, memberRatio, pcRatio, mobileRatio, osChartData, osChartOption, browserChartData} = this.state;
+    const {visitUser, signupUser, signupRatio, purchaseCount, purchasePrice, visitorRatio, memberRatio, pcRatio, mobileRatio, browserChartData} = this.state;
     const signupCount = signupUser + '(' + signupRatio + '%)';
     return (
         <div className="animated fadeIn">
@@ -914,20 +655,6 @@ class Dashboard extends Component {
                     </Col>
                   </Row>
                 </CardBody>
-                {/*<CardFooter>
-                  <Row className="text-center">
-                    <Col sm={12} md className="mb-sm-2 mb-0">
-                      <div className="text-muted">New Users</div>
-                      <strong>10(50%)</strong>
-                      <Progress className="progress-xs mt-2" color="success" value="40"/>
-                    </Col>
-                    <Col sm={12} md className="mb-sm-2 mb-0">
-                      <div className="text-muted">Returning Users</div>
-                      <strong>10(50%)</strong>
-                      <Progress className="progress-xs mt-2" color="info" value="40"/>
-                    </Col>
-                  </Row>
-                </CardFooter>*/}
               </Card>
             </Col>
             <Col xs="12" sm="12" lg="3">
@@ -990,143 +717,13 @@ class Dashboard extends Component {
               </Card>
             </Col>
           </Row>
-
+          <TopPage/>
           <Row>
-            <Col xs="12" sm="12" lg="6">
-              <Card>
-                <CardHeader style={{height: 46 + 'px'}}>
-                  <Row>
-                    <Col sm="5">
-                      <span className="mb-0"><strong>Top Popular Pages - A Customer</strong></span>
-                    </Col>
-                  </Row>
-                </CardHeader>
-                <CardBody>
-                  <Table responsive style={{tableLayout: 'fixed'}}>
-                    <colgroup>
-                      <col/>
-                      <col width="40%"/>
-                      <col width="30%"/>
-                      <col/>
-                    </colgroup>
-                    <thead>
-                    <tr>
-                      <th>No</th>
-                      <th>Page</th>
-                      <th>Description</th>
-                      <th>Count(%)</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {this.renderVisitorTopPage()}
-                    </tbody>
-                  </Table>
-                </CardBody>
-              </Card>
-            </Col>
-            <Col xs="12" sm="12" lg="6">
-              <Card>
-                <CardHeader style={{height: 46 + 'px'}}>
-                  <Row>
-                    <Col sm="5">
-                      <span className="mb-0"><strong>Top Popular Pages - A Member</strong></span>
-                    </Col>
-                  </Row>
-                </CardHeader>
-                <CardBody>
-                  <Table responsive style={{tableLayout: 'fixed'}}>
-                    <colgroup>
-                      <col/>
-                      <col width="40%"/>
-                      <col width="30%"/>
-                      <col/>
-                    </colgroup>
-                    <thead>
-                    <tr>
-                      <th>No</th>
-                      <th>Page</th>
-                      <th>Description</th>
-                      <th>Count(%)</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {this.renderMemberTopPage()}
-                    </tbody>
-                  </Table>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col xs="12" sm="12" lg="12">
-              <Card>
-                <CardHeader style={{height: 46 + 'px'}}>
-                  <Row>
-                    <Col sm="5">
-                      <span className="mb-0"><strong>Traffic Sources</strong></span>
-                    </Col>
-                  </Row>
-                </CardHeader>
-                <CardBody>
-                  <Table responsive style={{tableLayout: 'fixed'}}>
-                    <colgroup>
-                      <col width="10%"/>
-                      <col/>
-                      <col width="10%"/>
-                      <col width="10%"/>
-                      <col width="20%"/>
-                    </colgroup>
-                    <thead>
-                    <tr>
-                      <th>No</th>
-                      <th>Source</th>
-                      <th>Count</th>
-                      <th>Rate(%)</th>
-                      <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {this.renderInflowTopPage()}
-                    </tbody>
-                  </Table>
-                </CardBody>
-              </Card>
-            </Col>
+            <TrafficSource/>
           </Row>
           <Row>
-            <Col xs="12" sm="12" lg="6">
-              <Card>
-                <CardHeader style={{height: 46 + 'px'}}>
-                  <Row>
-                    <Col sm="5">
-                      <span className="mb-0"><strong>OS</strong></span>
-                    </Col>
-                  </Row>
-                </CardHeader>
-                <CardBody>
-                  <div className="chart-wrapper">
-                    <Doughnut data={osChartData} options={osChartOption}/>
-                  </div>
-                </CardBody>
-              </Card>
-            </Col>
-            <Col xs="12" sm="12" lg="6">
-              <Card>
-                <CardHeader style={{height: 46 + 'px'}}>
-                  <Row>
-                    <Col sm="5">
-                      <span className="mb-0"><strong>Browser</strong></span>
-                    </Col>
-                  </Row>
-                </CardHeader>
-                <CardBody>
-                  <div className="chart-wrapper">
-                    <Doughnut data={browserChartData}/>
-                  </div>
-                </CardBody>
-              </Card>
-            </Col>
+            <OS/>
+            <Browser/>
           </Row>
           <Row>
             <ActiveLocation/>

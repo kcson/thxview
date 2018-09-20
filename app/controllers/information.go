@@ -53,6 +53,7 @@ func (i Information) SummaryOS() revel.Result {
 	}
 	rangeQuery := elastic.NewRangeQuery("@timestamp").
 		Gte(requestParams["fromDate"]).
+		Lte(requestParams["toDate"]).
 		Format(format).
 		TimeZone(requestParams["timeZone"].(string))
 

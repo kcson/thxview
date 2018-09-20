@@ -343,9 +343,10 @@ func (d Dashboard) TopPage() revel.Result {
 	requestParams := make(map[string]interface{})
 	d.Params.BindJSON(&requestParams)
 
-	rangeQuery := elastic.NewRangeQuery("session_timeout").
+	rangeQuery := elastic.NewRangeQuery("@timestamp").
 		Gte(requestParams["fromDate"]).
-		Format("yyyy-MM-dd HH:mm:ss").
+		Lte(requestParams["toDate"]).
+		Format(requestParams["format"].(string)).
 		TimeZone(requestParams["timeZone"].(string))
 
 	//회원이 보고 있는 top page
@@ -394,13 +395,10 @@ func (d Dashboard) Inflow() revel.Result {
 	requestParams := make(map[string]interface{})
 	d.Params.BindJSON(&requestParams)
 
-	format := "yyyy-MM-dd HH:mm:ss"
-	if requestParams["format"] != nil {
-		format = requestParams["format"].(string)
-	}
-	rangeQuery := elastic.NewRangeQuery("session_timeout").
+	rangeQuery := elastic.NewRangeQuery("@timestamp").
 		Gte(requestParams["fromDate"]).
-		Format(format).
+		Lte(requestParams["toDate"]).
+		Format(requestParams["format"].(string)).
 		TimeZone(requestParams["timeZone"].(string))
 
 	boolQuery := elastic.NewBoolQuery().Must(rangeQuery)
