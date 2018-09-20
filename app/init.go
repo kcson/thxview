@@ -31,7 +31,7 @@ func InitScheduler() {
 func init() {
 	// Filters is the default set of global filters.
 	revel.Filters = []revel.Filter{
-		revel.PanicFilter,             // Recover from panics and display an error page instead.
+		revel.PanicFilter, // Recover from panics and display an error page instead.
 		HttpsFilter,
 		revel.RouterFilter,            // Use the routing table to select the right Action
 		revel.FilterConfiguringFilter, // A hook for adding or removing per-Action filters.
@@ -68,12 +68,12 @@ var HeaderFilter = func(c *revel.Controller, fc []revel.Filter) {
 }
 
 var HttpsFilter = func(c *revel.Controller, fc []revel.Filter) {
-	fmt.Println("c.Request.URL.Host : " + c.Request.Host)
-	fmt.Println("c.Request.URL.GetPath() : " + c.Request.GetPath())
-	fmt.Println("c.Request.URL.GetRequestURI() : " + c.Request.GetRequestURI())
-	fmt.Println("c.Request.URL.Referer() : " + c.Request.Referer())
-
-	fmt.Println(c.Request.In.GetRaw())
+	//fmt.Println("c.Request.URL.Host : " + c.Request.Host)
+	//fmt.Println("c.Request.URL.GetPath() : " + c.Request.GetPath())
+	//fmt.Println("c.Request.URL.GetRequestURI() : " + c.Request.GetRequestURI())
+	//fmt.Println("c.Request.URL.Referer() : " + c.Request.Referer())
+	
+	//fmt.Println(c.Request.In.GetRaw())
 	fc[0](c, fc[1:]) // Execute the next filter stage.
 }
 
