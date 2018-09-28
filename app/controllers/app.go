@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/revel/revel"
 	"log"
-	"strings"
 )
 
 type App struct {
@@ -90,7 +89,7 @@ func (c App) CreateSession() revel.Result {
 			items = append(items, item)
 		}
 		//revel.INFO.Println("Item num :", len(items))
-		//revel.INFO.Println("items[0].password:", items[0].password)
+		//revel.INFO.Println("items[0].password:", items[0].password
 
 		if err != nil {
 			revel.INFO.Println("DB Error", err)
@@ -111,6 +110,22 @@ func (c App) CreateSession() revel.Result {
 			c.Message("Password is wrong!!!")
 			return c.Redirect(App.Index)
 		}
+
+		if username != nil {
+			c.Session["authKey"] = "authKey"
+			c.Session["userName"] = username.(string)
+			result["auth"] = "success"
+			result["role"] = items[0].role
+			//if strings.Compare(username.(string), "admin") == 0 {
+			//	result["role"] = 1
+			//} else {
+			//	result["role"] = 2
+			//}
+			//return c.Redirect(App.Index)
+		} else {
+			result["auth"] = "fail"
+		}
+		return c.RenderJSON(result)
 		//return c.Redirect(App.Dashboard)
 	} else {
 		revel.INFO.Println("CreateSession.logincheck : Missing value.....")
@@ -121,20 +136,21 @@ func (c App) CreateSession() revel.Result {
 
 	//Login Check end
 
-	if username != nil {
-		c.Session["authKey"] = "authKey"
-		c.Session["userName"] = username.(string)
-		result["auth"] = "success"
-		if strings.Compare(username.(string), "admin") == 0 {
-			result["role"] = 1
-		} else {
-			result["role"] = 2
-		}
-		//return c.Redirect(App.Index)
-	} else {
-		result["auth"] = "fail"
-	}
-	return c.RenderJSON(result)
+	//if username != nil {
+	//	c.Session["authKey"] = "authKey"
+	//	c.Session["userName"] = username.(string)
+	//	result["auth"] = "success"
+	//
+	//	//if strings.Compare(username.(string), "admin") == 0 {
+	//	//	result["role"] = 1
+	//	//} else {
+	//	//	result["role"] = 2
+	//	//}
+	//	//return c.Redirect(App.Index)
+	//} else {
+	//	result["auth"] = "fail"
+	//}
+	//return c.RenderJSON(result)
 }
 
 func (c App) DeleteSession() revel.Result {
