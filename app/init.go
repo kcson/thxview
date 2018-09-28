@@ -2,9 +2,9 @@ package app
 
 import (
 	"github.com/revel/revel"
-	"github.com/thxcloud/thxview_web/app/elasticsearch"
+	"github.com/thxcloud/thxview/app/elasticsearch"
 	"fmt"
-	"github.com/thxcloud/thxview_web/app/scheduler"
+	"github.com/thxcloud/thxview/app/scheduler"
 )
 
 var (

@@ -5,7 +5,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/revel/revel"
 	"log"
-	"thxview/app/routes"
+	"github.com/thxcloud/thxview/app/routes"
 )
 
 type Login struct {

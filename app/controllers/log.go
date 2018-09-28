@@ -6,7 +6,7 @@ import (
 	"context"
 	"net/http"
 	"github.com/olivere/elastic"
-	"github.com/thxcloud/thxview_web/app/elasticsearch"
+	"github.com/thxcloud/thxview/app/elasticsearch"
 	"strings"
 )
 
