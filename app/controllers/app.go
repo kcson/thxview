@@ -29,9 +29,9 @@ func (c App) Login() revel.Result {
 
 func Conn() (db *sql.DB) {
 	dbDriver := "mysql"
-	dbUser := "express2"
-	dbPass := "imsi00"
-	dbName := "tcp(127.0.0.1:3306)/exseoul"
+	dbUser := "thxview"
+	dbPass := "Thxview0913!"
+	dbName := "tcp(13.124.41.61:3306)/thxview"
 	db, err := sql.Open(dbDriver, dbUser+":"+dbPass+"@"+dbName)
 	if err != nil {
 		panic(err.Error())
@@ -54,72 +54,71 @@ func (c App) CreateSession() revel.Result {
 	//revel.INFO.Println("password==================", password)
 
 	//Login Check start
-	if username == "admin1" || username == "user" {
-		if username != nil && password != nil {
+	if username != nil && password != nil {
 
-			DB := Conn()
-			//DB := Login.dbConn()
-			revel.INFO.Println("CreateSession.logincheck : DB Connected......")
+		DB := Conn()
+		//DB := Login.dbConn()
+		revel.INFO.Println("CreateSession.logincheck : DB Connected......")
 
-			rows, err := DB.QueryContext(ctx, "SELECT id,password,role FROM thx_employee WHERE id=?", username)
-			if err != nil {
-				log.Fatal(err)
-			}
-			defer rows.Close()
+		rows, err := DB.QueryContext(ctx, "SELECT id,password,role FROM thx_employee WHERE id=?", username)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer rows.Close()
 
-			type userInfo struct {
-				id       string
-				password string
-				role     int
-			}
+		type userInfo struct {
+			id       string
+			password string
+			role     int
+		}
 
-			var items []userInfo
-			for rows.Next() {
-				item := userInfo{}
+		var items []userInfo
+		for rows.Next() {
+			item := userInfo{}
 
-				err := rows.Scan(
-					&item.id,
-					&item.password,
-					&item.role,
-				)
-				CheckErr(err)
+			err := rows.Scan(
+				&item.id,
+				&item.password,
+				&item.role,
+			)
+			CheckErr(err)
 
-				revel.INFO.Println("Item id :", item.id)
-				revel.INFO.Println("Item password :", item.password)
-				revel.INFO.Println("Item role :", item.role)
+			revel.INFO.Println("Item id :", item.id)
+			revel.INFO.Println("Item password :", item.password)
+			revel.INFO.Println("Item role :", item.role)
 
-				items = append(items, item)
-			}
-			//revel.INFO.Println("Item num :", len(items))
-			//revel.INFO.Println("items[0].password:", items[0].password)
+			items = append(items, item)
+		}
+		//revel.INFO.Println("Item num :", len(items))
+		//revel.INFO.Println("items[0].password:", items[0].password)
 
-			if err != nil {
-				revel.INFO.Println("DB Error", err)
-			}
+		if err != nil {
+			revel.INFO.Println("DB Error", err)
+		}
 
-			if len(items) == 0 {
-				revel.INFO.Println("CreateSession.logincheck : There is no user.....")
-				return c.Redirect(App.Index)
-			}
-
-			if len(items) > 0 && password == items[0].password {
-				revel.INFO.Println("CreateSession.logincheck : Password matching.....")
-				result["auth"] = "success"
-				//return c.Redirect(App.Dashboard)
-			} else {
-				revel.INFO.Println("CreateSession.logincheck : Password is wrong.....")
-				result["auth"] = "fail"
-				c.Message("Password is wrong!!!")
-				return c.Redirect(App.Index)
-			}
-			//return c.Redirect(App.Dashboard)
-		} else {
-			revel.INFO.Println("CreateSession.logincheck : Missing value.....")
-			c.Validation.Required(username).Message("Your name is required!")
-			result["auth"] = "fail"
+		if len(items) == 0 {
+			revel.INFO.Println("CreateSession.logincheck : There is no user.....")
 			return c.Redirect(App.Index)
 		}
+
+		if len(items) > 0 && password == items[0].password {
+			revel.INFO.Println("CreateSession.logincheck : Password matching.....")
+			result["auth"] = "success"
+			//return c.Redirect(App.Dashboard)
+		} else {
+			revel.INFO.Println("CreateSession.logincheck : Password is wrong.....")
+			result["auth"] = "fail"
+			c.Message("Password is wrong!!!")
+			return c.Redirect(App.Index)
+		}
+		//return c.Redirect(App.Dashboard)
+	} else {
+		revel.INFO.Println("CreateSession.logincheck : Missing value.....")
+		c.Validation.Required(username).Message("Your name is required!")
+		result["auth"] = "fail"
+		return c.Redirect(App.Index)
 	}
+
 	//Login Check end
 
 	if username != nil {
