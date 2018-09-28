@@ -57,8 +57,8 @@ func (c App) CreateSession() revel.Result {
 	if username == "admin1" || username == "user" {
 		if username != nil && password != nil {
 
-			//DB := Conn()
-			DB := Login.dbConn()
+			DB := Conn()
+			//DB := Login.dbConn()
 			revel.INFO.Println("CreateSession.logincheck : DB Connected......")
 
 			rows, err := DB.QueryContext(ctx, "SELECT id,password,role FROM thx_employee WHERE id=?", username)
