@@ -49,15 +49,11 @@ func (c App) CreateSession() revel.Result {
 
 	username := reqParam["username"]
 	password := reqParam["password"]
-	//revel.INFO.Println("username==================", username)
-	//revel.INFO.Println("password==================", password)
 
 	//Login Check start
 	if username != nil && password != nil {
 
 		DB := Conn()
-		//DB := Login.dbConn()
-		revel.INFO.Println("CreateSession.logincheck : DB Connected......")
 
 		rows, err := DB.QueryContext(ctx, "SELECT id,password,role FROM thx_employee WHERE id=?", username)
 		if err != nil {
@@ -96,41 +92,27 @@ func (c App) CreateSession() revel.Result {
 		}
 
 		if len(items) == 0 {
-			revel.INFO.Println("CreateSession.logincheck : There is no user.....")
 			return c.Redirect(App.Index)
 		}
 
 		if len(items) > 0 && password == items[0].password {
-			revel.INFO.Println("CreateSession.logincheck : Password matching.....")
-			result["auth"] = "success"
-			//return c.Redirect(App.Dashboard)
-		} else {
-			revel.INFO.Println("CreateSession.logincheck : Password is wrong.....")
-			result["auth"] = "fail"
-			c.Message("Password is wrong!!!")
-			return c.Redirect(App.Index)
-		}
-
-		if username != nil {
 			c.Session["authKey"] = "authKey"
 			c.Session["userName"] = username.(string)
 			result["auth"] = "success"
 			result["role"] = items[0].role
-			//if strings.Compare(username.(string), "admin") == 0 {
-			//	result["role"] = 1
-			//} else {
-			//	result["role"] = 2
-			//}
-			//return c.Redirect(App.Index)
+
+			return c.RenderJSON(result)
+			//return c.Redirect(App.Dashboard)
 		} else {
 			result["auth"] = "fail"
+			result["message"] = "Password is wrong!"
+
+			return c.RenderJSON(result)
 		}
-		return c.RenderJSON(result)
-		//return c.Redirect(App.Dashboard)
 	} else {
-		revel.INFO.Println("CreateSession.logincheck : Missing value.....")
 		c.Validation.Required(username).Message("Your name is required!")
 		result["auth"] = "fail"
+		result["message"] = "Your name is required!"
 		return c.Redirect(App.Index)
 	}
 
