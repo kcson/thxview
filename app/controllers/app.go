@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/revel/revel"
+	"github.com/thxcloud/thxview/app/config"
 	"log"
 )
 
@@ -27,10 +28,17 @@ func (c App) Login() revel.Result {
 }
 
 func Conn() (db *sql.DB) {
+
+	config := config.ReadConfig()
+	//fmt.Printf("%s: %s: %s\n", config.Dbpassword, config.Database, config.DbUser)
+
 	dbDriver := "mysql"
-	dbUser := "thxview"
-	dbPass := "Thxview0913!"
-	dbName := "tcp(13.124.41.61:3306)/thxview"
+	dbUser := config.DbUser
+	dbPass := config.Dbpassword
+	dbName := config.Database
+	//dbUser := "thxview"
+	//dbPass := "Thxview0913!"
+	//dbName := "tcp(13.124.41.61:3306)/thxview"
 	db, err := sql.Open(dbDriver, dbUser+":"+dbPass+"@"+dbName)
 	if err != nil {
 		panic(err.Error())
@@ -55,7 +63,7 @@ func (c App) CreateSession() revel.Result {
 
 		DB := Conn()
 
-		rows, err := DB.QueryContext(ctx, "SELECT id,password,role FROM thx_employee WHERE id=?", username)
+		rows, err := DB.QueryContext(ctx, "SELECT id,password,role,username FROM thx_employee WHERE id=?", username)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -65,6 +73,7 @@ func (c App) CreateSession() revel.Result {
 			id       string
 			password string
 			role     int
+			username string
 		}
 
 		var items []userInfo
@@ -75,12 +84,14 @@ func (c App) CreateSession() revel.Result {
 				&item.id,
 				&item.password,
 				&item.role,
+				&item.username,
 			)
 			CheckErr(err)
 
 			revel.INFO.Println("Item id :", item.id)
 			revel.INFO.Println("Item password :", item.password)
 			revel.INFO.Println("Item role :", item.role)
+			revel.INFO.Println("Item username :", item.username)
 
 			items = append(items, item)
 		}
