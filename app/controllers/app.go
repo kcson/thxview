@@ -2,10 +2,8 @@ package controllers
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"github.com/revel/revel"
-	"github.com/thxcloud/thxview/app/config"
 	"log"
 )
 
@@ -27,25 +25,6 @@ func (c App) Login() revel.Result {
 	return c.Render()
 }
 
-func Conn() (db *sql.DB) {
-
-	config := config.ReadConfig()
-	//fmt.Printf("%s: %s: %s\n", config.Dbpassword, config.Database, config.DbUser)
-
-	dbDriver := "mysql"
-	dbUser := config.DbUser
-	dbPass := config.Dbpassword
-	dbName := config.Database
-	//dbUser := "thxview"
-	//dbPass := "Thxview0913!"
-	//dbName := "tcp(13.124.41.61:3306)/thxview"
-	db, err := sql.Open(dbDriver, dbUser+":"+dbPass+"@"+dbName)
-	if err != nil {
-		panic(err.Error())
-	}
-	return db
-}
-
 var ctx = context.Background()
 
 func (c App) CreateSession() revel.Result {
@@ -61,7 +40,7 @@ func (c App) CreateSession() revel.Result {
 	//Login Check start
 	if username != nil && password != nil {
 
-		DB := Conn()
+		DB := dbConn()
 
 		rows, err := DB.QueryContext(ctx, "SELECT id,password,role,username FROM thx_employee WHERE id=?", username)
 		if err != nil {
