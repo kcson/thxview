@@ -1,5 +1,3 @@
-// Playbook - http://play.golang.org/p/3wFl4lacjX
-
 package controllers
 
 import (
