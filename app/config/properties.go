@@ -9,9 +9,12 @@ import (
 
 // Config ...
 type Config struct {
-	Dbpassword string
-	Database   string
-	DbUser     string
+	Dbpassword     string
+	Database       string
+	DbUser         string
+	Dbpasswordbyte []byte
+	Databasebyte   []byte
+	DbUserbyte     []byte
 }
 
 // Reads info from config file
