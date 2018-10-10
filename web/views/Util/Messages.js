@@ -12,7 +12,8 @@ let messages = new LocalizedStrings({
 
     settings: "Settings",
     settings_manage_site: "Manage Sites",
-    settings_manage_admin: "Manage Administrator"
+    settings_manage_admin: "Manage Administrator",
+    settings_manage_user: "Manage User"
   },
   ko: {
     dashboard: "대시보드",
@@ -25,7 +26,8 @@ let messages = new LocalizedStrings({
 
     settings: "설정",
     settings_manage_site: "사이트 관리",
-    settings_manage_admin: "관리자 관리"
+    settings_manage_admin: "관리자 관리",
+    settings_manage_user: "계정 관리"
   }
 });
 

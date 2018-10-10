@@ -28,7 +28,6 @@ func (c App) Login() revel.Result {
 var ctx = context.Background()
 
 func (c App) CreateSession() revel.Result {
-	//revel.INFO.Println("CreateSession.logincheck ========")
 	var reqParam = make(map[string]interface{})
 	result := make(map[string]interface{})
 
@@ -74,8 +73,6 @@ func (c App) CreateSession() revel.Result {
 
 			items = append(items, item)
 		}
-		//revel.INFO.Println("Item num :", len(items))
-		//revel.INFO.Println("items[0].password:", items[0].password
 
 		if err != nil {
 			revel.INFO.Println("DB Error", err)
@@ -105,24 +102,8 @@ func (c App) CreateSession() revel.Result {
 		result["message"] = "Your name is required!"
 		return c.Redirect(App.Index)
 	}
-
 	//Login Check end
 
-	//if username != nil {
-	//	c.Session["authKey"] = "authKey"
-	//	c.Session["userName"] = username.(string)
-	//	result["auth"] = "success"
-	//
-	//	//if strings.Compare(username.(string), "admin") == 0 {
-	//	//	result["role"] = 1
-	//	//} else {
-	//	//	result["role"] = 2
-	//	//}
-	//	//return c.Redirect(App.Index)
-	//} else {
-	//	result["auth"] = "fail"
-	//}
-	//return c.RenderJSON(result)
 }
 
 func (c App) DeleteSession() revel.Result {

@@ -22,17 +22,17 @@ func dbConn() (db *sql.DB) {
 	dbNamestr := config.Database
 	key := config.Key
 
-	revel.INFO.Println("dbUserstr ============== :", dbUserstr)
-	revel.INFO.Println("dbPassstr ============== :", dbPassstr)
-	revel.INFO.Println("dbNamestr ============== :", dbNamestr)
-	revel.INFO.Println("key ============== :", key)
+	//revel.INFO.Println("dbUserstr ============== :", dbUserstr)
+	//revel.INFO.Println("dbPassstr ============== :", dbPassstr)
+	//revel.INFO.Println("dbNamestr ============== :", dbNamestr)
+	//revel.INFO.Println("key ============== :", key)
 
 	dbUser, _ := decrypt([]byte(key), dbUserstr)
 	dbPass, _ := decrypt([]byte(key), dbPassstr)
 	dbName, _ := decrypt([]byte(key), dbNamestr)
-	revel.INFO.Println("dbUser ============== :", dbUser)
-	revel.INFO.Println("dbPass ============== :", dbPass)
-	revel.INFO.Println("dbName ============== :", dbName)
+	//revel.INFO.Println("dbUser ============== :", dbUser)
+	//revel.INFO.Println("dbPass ============== :", dbPass)
+	//revel.INFO.Println("dbName ============== :", dbName)
 
 	db, err := sql.Open(dbDriver, dbUser+":"+dbPass+"@"+dbName)
 	if err != nil {

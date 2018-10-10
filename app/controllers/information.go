@@ -1,22 +1,22 @@
 package controllers
 
 import (
-	"github.com/revel/revel"
-	"net/http"
-	"github.com/thxcloud/thxview/app/elasticsearch"
-	"github.com/olivere/elastic"
 	"context"
+	"github.com/olivere/elastic"
+	"github.com/revel/revel"
+	"github.com/thxcloud/thxview/app/elasticsearch"
+	"net/http"
 	"strings"
 )
 
 type Information struct {
 	*revel.Controller `json:"-"`
-	Name     string   `json:"name"`
-	PageView int      `json:"page_view"`
-	NewUser  int      `json:"new_user"`
-	User     int      `json:"user"`
-	Customer int      `json:"customer"`
-	Member   int      `json:"member"`
+	Name              string `json:"name"`
+	PageView          int    `json:"page_view"`
+	NewUser           int    `json:"new_user"`
+	User              int    `json:"user"`
+	Customer          int    `json:"customer"`
+	Member            int    `json:"member"`
 }
 
 type Location struct {
@@ -70,12 +70,12 @@ func (i Information) SummaryOS() revel.Result {
 		return i.RenderJSON(result)
 	}
 	var osTotal []OS
-	windows := OS{Name: "Windows", Count: 0, Detail: []OS{},}
-	mac := OS{Name: "Mac", Count: 0, Detail: []OS{},}
-	linux := OS{Name: "Linux", Count: 0, Detail: []OS{},}
-	ios := OS{Name: "iOS", Count: 0, Detail: []OS{},}
-	android := OS{Name: "Android", Count: 0, Detail: []OS{},}
-	other := OS{Name: "other", Count: 0, Detail: []OS{},}
+	windows := OS{Name: "Windows", Count: 0, Detail: []OS{}}
+	mac := OS{Name: "Mac", Count: 0, Detail: []OS{}}
+	linux := OS{Name: "Linux", Count: 0, Detail: []OS{}}
+	ios := OS{Name: "iOS", Count: 0, Detail: []OS{}}
+	android := OS{Name: "Android", Count: 0, Detail: []OS{}}
+	other := OS{Name: "other", Count: 0, Detail: []OS{}}
 
 	bucketItems, _ := os.Aggregations.Terms("os")
 	buckets := bucketItems.Buckets
@@ -196,7 +196,7 @@ func (i Information) TrafficSource() revel.Result {
 	termAggs := elastic.NewTermsAggregation().
 		Field("referrer.keyword").
 		Size(50).
-		Exclude(".*" + requestParams["exclude"].(string) + ".*").
+		Exclude(".*"+requestParams["exclude"].(string)+".*").
 		SubAggregation("visit", visitAggs).
 		SubAggregation("member", memberAggs)
 	path := requestParams["path"]

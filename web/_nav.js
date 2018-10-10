@@ -160,5 +160,15 @@ export default {
         // },
       ],
     },
+    {
+        name: messages.settings_manage_user,
+        url: '/user',
+        icon: 'icon-settings',
+        badge: {
+            variant: 'info',
+            //text: 'NEW',
+        },
+        role: [1],
+    },
   ],
 };
