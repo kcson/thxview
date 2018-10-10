@@ -1,19 +1,19 @@
 import React, {PureComponent} from 'react';
 import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Col,
-  Form,
-  FormGroup,
-  Input,
-  Label,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
-  Row,
-  Table
+    Button,
+    Card,
+    CardBody,
+    CardHeader,
+    Col,
+    Form,
+    FormGroup,
+    Input,
+    Label, Modal, ModalBody, ModalFooter, ModalHeader,
+    Pagination,
+    PaginationItem,
+    PaginationLink,
+    Row,
+    Table
 } from 'reactstrap';
 import moment from 'moment';
 import 'moment-timezone';
@@ -28,9 +28,13 @@ export default class User extends PureComponent {
     super(props);
 
     this.state = {
+      modal: false,
       rows: []
     }
   }
+  popupModel = () => {
+      this.setState({modal: !this.state.modal});
+  };
 
   componentDidMount() {
     this.fetchData();
@@ -62,6 +66,7 @@ export default class User extends PureComponent {
     )
   }
 
+
   renderContent() {
       const {rows} = this.state
       const tdStyle = {textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', paddingTop: 4 + 'px', paddingBottom: 4 + 'px'};
@@ -76,7 +81,7 @@ export default class User extends PureComponent {
               rows.map((row, index) =>
                   <tr>
                       <td style={tdStyle} title={row.id}>{row.id}</td>
-                      <td style={tdStyle} title={row.password}>{row.password}</td>
+                      <td style={tdStyle} title={row.password}>{row.password.substring(0,2)}***************</td>
                       <td style={tdStyle} title={row.role}>{row.role}</td>
                       <td style={tdStyle} title={row.username}>{row.username}</td>
                   </tr>
@@ -93,15 +98,17 @@ export default class User extends PureComponent {
 
               <Card>
                 <CardHeader>
-                  <strong>User List</strong>
+                    <strong>User List</strong>
+                    <Button style={{padding: 0, float: 'right'}} color="link" onClick={this.popupModel}><i
+                        className="fa fa-plus pr-1"></i>Add page</Button>
                 </CardHeader>
                 <CardBody>
                   <Table style={{tableLayout: 'fixed'}}>
                     <colgroup>
-                      <col style={{width: '30%'}}/>
-                      <col style={{width: '30%'}}/>
-                      <col style={{width: '10%'}}/>
-                      <col style={{width: '30%'}}/>
+                      <col style={{width: '25%'}}/>
+                      <col style={{width: '25%'}}/>
+                      <col style={{width: '25%'}}/>
+                      <col style={{width: '25%'}}/>
                       <col/>
                     </colgroup>
                     <thead>
@@ -120,6 +127,44 @@ export default class User extends PureComponent {
               </Card>
             </Col>
           </Row>
+            <Modal isOpen={this.state.modal} toggle={this.popupModel}>
+                <ModalHeader toggle={this.popupModel}>Add user</ModalHeader>
+                <ModalBody>
+                    <Form className="form-horizontal">
+                        <FormGroup row>
+                            <Label className="col-md-3 col-form-label" htmlFor="select">Id</Label>
+                            <Col xs="12" md="9">
+                                <Input type="text" name="select" id="select" placeholder=""/>
+                            </Col>
+                        </FormGroup>
+                        <FormGroup row>
+                            <Label className="col-md-3 col-form-label" htmlFor="select">Password</Label>
+                            <Col xs="12" md="9">
+                                <Input type="text" name="select" id="select" placeholder=""/>
+                            </Col>
+                        </FormGroup>
+                        <FormGroup row>
+                            <Label className="col-md-3 col-form-label" htmlFor="select">Role</Label>
+                            <Col xs="12" md="9">
+                                <Input type="select" name="select" id="select">
+                                    <option value="0">Admin</option>
+                                    <option value="1">User</option>
+                                </Input>
+                            </Col>
+                        </FormGroup>
+                        <FormGroup row>
+                            <Label className="col-md-3 col-form-label" htmlFor="select">Username</Label>
+                            <Col xs="12" md="9">
+                                <Input type="text" name="select" id="select" placeholder=""/>
+                            </Col>
+                        </FormGroup>
+                    </Form>
+                </ModalBody>
+                <ModalFooter>
+                    <Button color="primary" onClick={this.popupModel}>Save</Button>{' '}
+                    <Button color="secondary" onClick={this.popupModel}>Cancel</Button>
+                </ModalFooter>
+            </Modal>
         </div>
     );
   }
