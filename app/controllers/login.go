@@ -12,15 +12,7 @@ type Login struct {
 }
 
 func dbConn() (db *sql.DB) {
-	//config := config.ReadConfig()
-	//fmt.Printf("%s: %s: %s\n", config.Dbpassword, config.Database, config.DbUser)
-
 	dbDriver := "mysql"
-	//dbUserstr := config.DbUser
-	//dbPassstr := config.Dbpassword
-	//dbNamestr := config.Database
-	//key := config.Key
-
 	dbUserstr := revel.Config.StringDefault("dbuser", "thxview")
 	dbPassstr := revel.Config.StringDefault("dbpassword", "Thxview0913!")
 	dbNamestr := revel.Config.StringDefault("database", "tcp(http://thxlab.com:3306)/thxview")
