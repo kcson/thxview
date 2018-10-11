@@ -18,6 +18,7 @@ import SettingsPage from "./views/Settings/SettingsPage";
 import ReportGenerate from "./views/Report/ReportGenerate";
 import ReportMgmt from "./views/Report/ReportMgmt";
 import messages from "./views/Util/Messages";
+import User from "./views/user/User";
 
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
@@ -50,7 +51,11 @@ const routes = [
   {path: '/settings', exact: true, name: messages.settings, component: SettingsPage},
   //{path: '/settings/conversion', exact: true, name: '전환 페이지 관리', component: SettingsConversion},
   {path: '/settings/page', name: 'Manage Page', component: SettingsPage},
+  //{path: '/settings/user', name: 'Manage User', component: SettingsPage},
   //{path: '/settings/dashboard', name: '대시보드 관리', component: EmailMaritime}
+
+  {path: '/user', name: 'Manage User', component: User},
+  {path: '/user/save', name: 'User Add Save', component: User},
 ];
 
 export default routes;

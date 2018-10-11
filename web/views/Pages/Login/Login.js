@@ -23,6 +23,7 @@ class Login extends Component {
     console.log(this.state.username);
     console.log(this.state.password);
     if (this.state.username === '' || this.state.password === '') {
+        alert('Your id or password is required!');
       return;
     }
 
@@ -41,6 +42,10 @@ class Login extends Component {
             sessionStorage.username = this.state.username;
             sessionStorage.role = response.data.role;
             this.props.history.push('/');
+          }else{
+              console.log(response.data.auth)
+              console.log(response.data.message)
+              alert(response.data.message);
           }
         },
         (err) => {
