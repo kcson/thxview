@@ -34,6 +34,7 @@ POST    /activity/summary/top_page              Activity.SummaryTopPage
 POST    /activity/summary/sign_up               Activity.SummarySignUp
 POST    /activity/summary/purchase              Activity.SummaryPurchase
 POST    /activity/page_view                     Activity.PageView
+POST    /activity/purchase                      Activity.Purchase
 
 POST    /log/search                             Log.SearchLog
 

@@ -7,6 +7,7 @@ import (
 	"github.com/olivere/elastic"
 	"context"
 	"math"
+	"fmt"
 )
 
 type Activity struct {
@@ -27,6 +28,15 @@ type TopPage struct {
 	Desc  string  `json:"desc"`
 	Count int     `json:"count"`
 	Ratio float64 `json:"ratio"`
+}
+
+type Purchase struct {
+	Item     string  `json:"item"`
+	Customer int     `json:"customer"`
+	Member   int     `json:"member"`
+	Pc       int     `json:"pc"`
+	Mobile   int     `json:"mobile"`
+	Amount   float64 `json:"amount"`
 }
 
 func (a Activity) SummaryVisitUser() revel.Result {
@@ -429,4 +439,98 @@ func (a Activity) PageView() revel.Result {
 
 	result["pages"] = tTotal
 	return a.RenderJSON(result)
+}
+
+func (a Activity) Purchase() revel.Result {
+	result := make(map[string]interface{})
+	authKey, ok := a.Session["authKey"]
+	if !ok || authKey == "" {
+		a.Response.Status = http.StatusUnauthorized
+		return a.RenderJSON(result)
+	}
+
+	ctx := context.Background()
+
+	requestParams := make(map[string]interface{})
+	a.Params.BindJSON(&requestParams)
+
+	fmt.Println(requestParams["fromDate"])
+	fmt.Println(requestParams["toDate"])
+	fmt.Println(requestParams["format"])
+	fmt.Println(requestParams["interval"])
+	fmt.Println(requestParams["timeZone"])
+
+	rangeQuery := elastic.NewRangeQuery("@timestamp").
+		Gte(requestParams["fromDate"]).
+		Lte(requestParams["toDate"]).
+		Format(requestParams["format"].(string)).
+		TimeZone(requestParams["timeZone"].(string))
+
+	sumAggs := elastic.NewSumAggregation().Field("purchase.total_price")
+	memberAggs := elastic.NewTermsAggregation().Field("purchase.member_yn")
+	osAggs := elastic.NewTermsAggregation().Field("purchase.os_type")
+	termAggs := elastic.NewTermsAggregation().Field("purchase.p_name.keyword").
+		SubAggregation("total_price", sumAggs).
+		SubAggregation("member", memberAggs).
+		SubAggregation("os", osAggs)
+
+	nestedAggs := elastic.NewNestedAggregation().
+		Path("purchase").
+		SubAggregation("purchase", termAggs)
+
+	boolQuery := elastic.NewBoolQuery().Must(rangeQuery)
+	resultAggs, err := elasticsearch.Client.Search().
+		Index("logstash-*").
+		Size(0).
+		Aggregation("purchase_nested", nestedAggs).
+		Query(boolQuery).
+		Do(ctx)
+	if err != nil {
+		a.Response.Status = http.StatusInternalServerError
+		return a.RenderJSON(result)
+	}
+
+	var purchases []Purchase
+	pnBucket, _ := resultAggs.Aggregations.Nested("purchase_nested")
+
+	pBucketItems, _ := pnBucket.Aggregations.Terms("purchase")
+	pBuckets := pBucketItems.Buckets
+	for _, pBucket := range pBuckets {
+		purchase := Purchase{
+			Pc:       0,
+			Mobile:   0,
+			Customer: 0,
+			Member:   0,
+		}
+		purchase.Item = pBucket.Key.(string)
+
+		//os type
+		oBucketItems, _ := pBucket.Terms("os")
+		oBuckets := oBucketItems.Buckets
+		for _, oBucket := range oBuckets {
+			if oBucket.Key.(float64) == 1 {
+				purchase.Pc += int(oBucket.DocCount)
+			} else {
+				purchase.Mobile += int(oBucket.DocCount)
+			}
+		}
+
+		tPriceValue, _ := pBucket.Sum("total_price")
+		purchase.Amount = *tPriceValue.Value
+
+		//member type
+		mBucketItems, _ := pBucket.Terms("member")
+		mBuckets := mBucketItems.Buckets
+		for _, mBucket := range mBuckets {
+			if mBucket.Key.(float64) == 0 {
+				purchase.Customer += int(mBucket.DocCount)
+			} else {
+				purchase.Member += int(mBucket.DocCount)
+			}
+		}
+
+		purchases = append(purchases, purchase)
+	}
+
+	return a.RenderJSON(purchases)
 }

@@ -75,7 +75,7 @@ class OS extends Component {
 
   componentWillUnmount() {
     if (this.timer !== null) {
-      clearInterval(this.locationTimer);
+      clearInterval(this.timer);
     }
   }
 
