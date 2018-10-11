@@ -106,6 +106,31 @@ export default class User extends PureComponent {
     )
   }
 
+  deleteId = (id) => {
+      axios({
+          method: 'post',
+          url: '/user/delete',
+          data: {
+            id : id
+          }
+      }).then(
+          (response) => {
+              console.log(response);
+              if (response.data == null) {
+                  this.setState({rows: []});
+                  return;
+              }
+              // this.setState({rows: response.data});
+          },
+          (err) => {
+              console.log(err);
+              if (err.response.status === HttpStatus.UNAUTHORIZED) {
+                  this.props.history.push('/login');
+              }
+          }
+      )
+  };
+
   handleIdChange = (event) => {
       this.setState({id: event.target.value})
   };
@@ -143,6 +168,9 @@ export default class User extends PureComponent {
                       <td style={tdStyle} title={row.password}>{row.password.substring(0,2)}***************</td>
                       <td style={tdStyle} title={row.role}>{row.role}</td>
                       <td style={tdStyle} title={row.username}>{row.username}</td>
+                      <td>
+                          <i className="fa fa-remove fa-lg pr-1" onClick={this.deleteId(row.id)}></i><i className="fa fa-edit fa-lg pl-1"></i>
+                      </td>
                   </tr>
               )
           )
@@ -154,6 +182,7 @@ export default class User extends PureComponent {
     return (
         <div className="animated fadeIn">
           <Row>
+
             <Col xs="12" lg="12">
 
               <Card>
@@ -167,8 +196,9 @@ export default class User extends PureComponent {
                     <colgroup>
                       <col style={{width: '25%'}}/>
                       <col style={{width: '25%'}}/>
+                      <col style={{width: '12%'}}/>
                       <col style={{width: '25%'}}/>
-                      <col style={{width: '25%'}}/>
+                      <col style={{width: '13%'}}/>
                       <col/>
                     </colgroup>
                     <thead>
@@ -177,6 +207,7 @@ export default class User extends PureComponent {
                       <th style={{verticalAlign: 'middle'}}>Password</th>
                       <th style={{verticalAlign: 'middle'}}>Role</th>
                       <th style={{verticalAlign: 'middle'}}>UserName</th>
+                      <th style={{verticalAlign: 'middle'}}></th>
                     </tr>
                     </thead>
                     <tbody>
