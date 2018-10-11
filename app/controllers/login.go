@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/revel/revel"
-	"github.com/thxcloud/thxview/app/config"
 	"github.com/thxcloud/thxview/app/routes"
 )
 
@@ -13,14 +12,19 @@ type Login struct {
 }
 
 func dbConn() (db *sql.DB) {
-	config := config.ReadConfig()
+	//config := config.ReadConfig()
 	//fmt.Printf("%s: %s: %s\n", config.Dbpassword, config.Database, config.DbUser)
 
 	dbDriver := "mysql"
-	dbUserstr := config.DbUser
-	dbPassstr := config.Dbpassword
-	dbNamestr := config.Database
-	key := config.Key
+	//dbUserstr := config.DbUser
+	//dbPassstr := config.Dbpassword
+	//dbNamestr := config.Database
+	//key := config.Key
+
+	dbUserstr := revel.Config.StringDefault("dbuser", "thxview")
+	dbPassstr := revel.Config.StringDefault("dbpassword", "Thxview0913!")
+	dbNamestr := revel.Config.StringDefault("database", "tcp(http://thxlab.com:3306)/thxview")
+	key := revel.Config.StringDefault("key", "LKHlhb899Y09olUi")
 
 	//revel.INFO.Println("dbUserstr ============== :", dbUserstr)
 	//revel.INFO.Println("dbPassstr ============== :", dbPassstr)
