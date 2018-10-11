@@ -41,6 +41,7 @@ POST    /email/general                          Email.SearchGeneral
 POST    /email/maritime                         Email.SearchMaritime
 
 POST    /user/list                              User.SelectUserList
+POST    /user/save                              User.AddUserSave
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

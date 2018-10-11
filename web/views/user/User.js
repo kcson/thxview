@@ -28,19 +28,59 @@ export default class User extends PureComponent {
     super(props);
 
     this.state = {
+      id       : "",
+      password : "",
+      role     : 2,
+      username : "",
       modal: false,
-      rows: []
+      rows: [],
     }
   }
   popupModel = () => {
       this.setState({modal: !this.state.modal});
   };
 
+  closeupModel = () => {
+      this.setState({modal: false});
+  };
+
   componentDidMount() {
     this.fetchData();
+    // this.modalDataSave();
   }
 
-  fetchData() {
+  modalDataSave= () => {
+      const { id, password, role, username } = this.state;
+
+      axios({
+          method: 'post',
+          url: '/user/save',
+          data: {
+              id       : this.state.id,
+              password : this.state.password,
+              role     : this.state.role,
+              username : this.state.username
+          }
+      }).then(
+          (response) => {
+              console.log(response);
+              if (response.data == null) {
+                  this.setState({rows: []});
+                  return;
+              }
+              this.fetchData();
+              this.closeupModel();
+          },
+          (err) => {
+              console.log(err);
+              if (err.response.status === HttpStatus.UNAUTHORIZED) {
+                  this.props.history.push('/login');
+              }
+          }
+      )
+  }
+
+  fetchData = () => {
 
     axios({
       method: 'post',
@@ -66,6 +106,25 @@ export default class User extends PureComponent {
     )
   }
 
+  handleIdChange = (event) => {
+      this.setState({id: event.target.value})
+  };
+
+  handlePassChange = (event) => {
+      this.setState({password: event.target.value})
+  };
+
+  handleUsernameChange = (event) => {
+      this.setState({username: event.target.value})
+  };
+
+  handleRoleChange = (event) => {
+      if(event.target.value == 1){
+          console.log("event.target.value == 1")
+      }else if(event.target.value == 0){
+          this.setState({role: 1})
+      }
+  };
 
   renderContent() {
       const {rows} = this.state
@@ -91,6 +150,7 @@ export default class User extends PureComponent {
   }
 
   render() {
+    const {id, password, role, username} = this.state;
     return (
         <div className="animated fadeIn">
           <Row>
@@ -100,7 +160,7 @@ export default class User extends PureComponent {
                 <CardHeader>
                     <strong>User List</strong>
                     <Button style={{padding: 0, float: 'right'}} color="link" onClick={this.popupModel}><i
-                        className="fa fa-plus pr-1"></i>Add page</Button>
+                        className="fa fa-plus pr-1"></i>Add user</Button>
                 </CardHeader>
                 <CardBody>
                   <Table style={{tableLayout: 'fixed'}}>
@@ -134,19 +194,19 @@ export default class User extends PureComponent {
                         <FormGroup row>
                             <Label className="col-md-3 col-form-label" htmlFor="select">Id</Label>
                             <Col xs="12" md="9">
-                                <Input type="text" name="select" id="select" placeholder=""/>
+                                <Input type="text" name="select" id="select" placeholder="" onChange={this.handleIdChange}/>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
                             <Label className="col-md-3 col-form-label" htmlFor="select">Password</Label>
                             <Col xs="12" md="9">
-                                <Input type="text" name="select" id="select" placeholder=""/>
+                                <Input type="text" name="select" id="select" placeholder="" onChange={this.handlePassChange}/>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
                             <Label className="col-md-3 col-form-label" htmlFor="select">Role</Label>
                             <Col xs="12" md="9">
-                                <Input type="select" name="select" id="select">
+                                <Input type="select" name="select" id="select" onChange={this.handleRoleChange}>
                                     <option value="0">Admin</option>
                                     <option value="1">User</option>
                                 </Input>
@@ -155,13 +215,13 @@ export default class User extends PureComponent {
                         <FormGroup row>
                             <Label className="col-md-3 col-form-label" htmlFor="select">Username</Label>
                             <Col xs="12" md="9">
-                                <Input type="text" name="select" id="select" placeholder=""/>
+                                <Input type="text" name="select" id="select" placeholder="" onChange={this.handleUsernameChange}/>
                             </Col>
                         </FormGroup>
                     </Form>
                 </ModalBody>
                 <ModalFooter>
-                    <Button color="primary" onClick={this.popupModel}>Save</Button>{' '}
+                    <Button color="primary" onClick={this.modalDataSave}>Save</Button>{' '}
                     <Button color="secondary" onClick={this.popupModel}>Cancel</Button>
                 </ModalFooter>
             </Modal>

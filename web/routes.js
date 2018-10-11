@@ -55,6 +55,7 @@ const routes = [
   //{path: '/settings/dashboard', name: '대시보드 관리', component: EmailMaritime}
 
   {path: '/user', name: 'Manage User', component: User},
+  {path: '/user/save', name: 'User Add Save', component: User},
 ];
 
 export default routes;
