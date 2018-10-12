@@ -34,6 +34,7 @@ export default class User extends PureComponent {
       username : "",
       modal: false,
       rows: [],
+      modify   : 0,
     }
   }
   popupModel = () => {
@@ -50,42 +51,74 @@ export default class User extends PureComponent {
   }
 
   modalDataSave= () => {
-      const { id, password, role, username } = this.state;
+      const { id, password, role, username, modify } = this.state;
       if (this.state.id === '' || this.state.password === '' || this.state.role === '' || this.state.username === '') {
-          alert('Your id or password is required!');
+
           return;
       }
-      // console.log('modalDataSave in............:');
-      // console.log(id);
-      // console.log(password);
-      // console.log(role);
-      // console.log(username);
-      axios({
-          method: 'post',
-          url: '/user/save',
-          data: {
-              id       : this.state.id,
-              password : this.state.password,
-              role     : this.state.role,
-              username : this.state.username
-          }
-      }).then(
-          (response) => {
-              console.log(response);
-              if (response.data == null) {
-                  this.setState({rows: []});
-                  return;
+      console.log('modalDataSave in............:');
+      console.log(id);
+      console.log(password);
+      console.log(role);
+      console.log(username);
+      console.log(modify);
+
+      if(modify == 0){
+          axios({
+              method: 'post',
+              url: '/user/save',
+              data: {
+                  id       : this.state.id,
+                  password : this.state.password,
+                  role     : this.state.role,
+                  username : this.state.username
               }
-              this.fetchData();
-              this.closeupModel();
-          },
-          (err) => {
-              console.log(err);
-              if (err.response.status === HttpStatus.UNAUTHORIZED) {
-                  this.props.history.push('/login');
+          }).then(
+              (response) => {
+                  console.log(response);
+                  if (response.data == null) {
+                      this.setState({rows: []});
+                      return;
+                  }
+                  this.fetchData();
+                  this.closeupModel();
+              },
+              (err) => {
+                  console.log(err);
+                  if (err.response.status === HttpStatus.UNAUTHORIZED) {
+                      this.props.history.push('/login');
+                  }
               }
-          }
-      )
+          )
+      }else if(modify == 1){
+          axios({
+              method: 'post',
+              url: '/user/update',
+              data: {
+                  id       : this.state.id,
+                  password : this.state.password,
+                  role     : this.state.role,
+                  username : this.state.username
+              }
+          }).then(
+              (response) => {
+                  console.log(response);
+                  if (response.data == null) {
+                      this.setState({rows: []});
+                      return;
+                  }
+                  this.fetchData();
+                  this.closeupModel();
+              },
+              (err) => {
+                  console.log(err);
+                  if (err.response.status === HttpStatus.UNAUTHORIZED) {
+                      this.props.history.push('/login');
+                  }
+              }
+          )
+      }
+
   }
 
   fetchData = () => {
@@ -115,47 +148,45 @@ export default class User extends PureComponent {
   }
 
   deleteUser = (delid) => {
-
-      console.log('deleteId in............:');
-      console.log(delid);
-      axios({
-          method: 'post',
-          url: '/user/delete',
-          data: {
-            id : delid
-          }
-      }).then(
-          (response) => {
-              console.log(response);
-              if (response.data == null) {
-                  this.setState({rows: []});
-                  return;
+      var jbResult = confirm('Are you sure you want to delete?');
+      console.log('jbResult   :');
+      console.log(jbResult);
+      if(!jbResult){
+          console.log('jbResult == false')
+          this.fetchData();
+      }else {
+          axios({
+              method: 'post',
+              url: '/user/delete',
+              data: {
+                  id: delid
               }
-              this.fetchData();
-          },
-          (err) => {
-              console.log(err);
-              if (err.response.status === HttpStatus.UNAUTHORIZED) {
-                  this.props.history.push('/login');
+          }).then(
+              (response) => {
+                  console.log(response);
+                  if (response.data == null) {
+                      this.setState({rows: []});
+                      return;
+                  }
+                  this.fetchData();
+              },
+              (err) => {
+                  console.log(err);
+                  if (err.response.status === HttpStatus.UNAUTHORIZED) {
+                      this.props.history.push('/login');
+                  }
               }
-          }
-      )
+          )
+      }
   };
 
-  editUser = (id, password, role, username) => {
-      console.log('editUser in............:');
-      console.log(id);
-      console.log(password);
-      console.log(role);
-      console.log(username);
+  loadUser = (id) => {
+      const { modify } = this.state;
       axios({
           method: 'post',
-          url: '/user/update',
+          url: '/user/load',
           data: {
-              id : id,
-              password : password,
-              role : role,
-              username : username
+              id : id
           }
       }).then(
           (response) => {
@@ -164,8 +195,24 @@ export default class User extends PureComponent {
                   this.setState({rows: []});
                   return;
               }
-              this.fetchData();
-              this.closeupModel();
+              // console.log(response.data.id);
+              // console.log(response.data.password);
+              // console.log(response.data.role);
+              // console.log(response.data.username);
+
+              this.popupModel();
+              document.getElementById('modelid').value=response.data.id;
+              document.getElementById('modelpassword').value=response.data.password;
+              document.getElementById('modelusername').value=response.data.username;
+              if(response.data.role == 1)
+                  document.getElementById('modelrole').value=0;
+              if(response.data.role == 2)
+                  document.getElementById('modelrole').value=1;
+              this.setState({id: response.data.id});
+              this.setState({password: response.data.password});
+              this.setState({role: response.data.role});
+              this.setState({username: response.data.username});
+              this.setState({modify: 1});
           },
           (err) => {
               console.log(err);
@@ -190,6 +237,10 @@ export default class User extends PureComponent {
 
   deleteId = (event) => {
       this.deleteUser(event.target.id)
+  };
+
+  loadUserInfo = (event) => {
+      this.loadUser(event.target.id)
   };
 
   handleRoleChange = (event) => {
@@ -220,7 +271,7 @@ export default class User extends PureComponent {
                       <td onClick={this.deleteId}>
                           <i className="fa fa-remove fa-lg pr-1" id={row.id}></i>
                       </td>
-                      <td onClick={this.handlePassChange}>
+                      <td onClick={this.loadUserInfo}>
                           <i className="fa fa-edit fa-lg pl-1" id={row.id}></i>
                       </td>
                   </tr>
@@ -279,19 +330,19 @@ export default class User extends PureComponent {
                         <FormGroup row>
                             <Label className="col-md-3 col-form-label" htmlFor="select">Id</Label>
                             <Col xs="12" md="9">
-                                <Input type="text" name="select" id="select" placeholder="" onChange={this.handleIdChange}/>
+                                <Input type="text" name="select" id="modelid" placeholder="" onChange={this.handleIdChange}/>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
                             <Label className="col-md-3 col-form-label" htmlFor="select">Password</Label>
                             <Col xs="12" md="9">
-                                <Input type="text" name="select" id="select" placeholder="" onChange={this.handlePassChange}/>
+                                <Input type="text" name="select" id="modelpassword" placeholder="" onChange={this.handlePassChange}/>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
                             <Label className="col-md-3 col-form-label" htmlFor="select">Role</Label>
                             <Col xs="12" md="9">
-                                <Input type="select" name="select" id="select" onChange={this.handleRoleChange}>
+                                <Input type="select" name="select" id="modelrole" onChange={this.handleRoleChange}>
                                     <option value="0">Admin</option>
                                     <option value="1">User</option>
                                 </Input>
@@ -300,7 +351,7 @@ export default class User extends PureComponent {
                         <FormGroup row>
                             <Label className="col-md-3 col-form-label" htmlFor="select">Username</Label>
                             <Col xs="12" md="9">
-                                <Input type="text" name="select" id="select" placeholder="" onChange={this.handleUsernameChange}/>
+                                <Input type="text" name="select" id="modelusername" placeholder="" onChange={this.handleUsernameChange}/>
                             </Col>
                         </FormGroup>
                     </Form>
