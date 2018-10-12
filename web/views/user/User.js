@@ -30,7 +30,7 @@ export default class User extends PureComponent {
     this.state = {
       id       : "",
       password : "",
-      role     : 2,
+      role     : 1,
       username : "",
       modal: false,
       rows: [],
@@ -51,7 +51,15 @@ export default class User extends PureComponent {
 
   modalDataSave= () => {
       const { id, password, role, username } = this.state;
-
+      if (this.state.id === '' || this.state.password === '' || this.state.role === '' || this.state.username === '') {
+          alert('Your id or password is required!');
+          return;
+      }
+      // console.log('modalDataSave in............:');
+      // console.log(id);
+      // console.log(password);
+      // console.log(role);
+      // console.log(username);
       axios({
           method: 'post',
           url: '/user/save',
@@ -106,12 +114,15 @@ export default class User extends PureComponent {
     )
   }
 
-  deleteId = (id) => {
+  deleteUser = (delid) => {
+
+      console.log('deleteId in............:');
+      console.log(delid);
       axios({
           method: 'post',
           url: '/user/delete',
           data: {
-            id : id
+            id : delid
           }
       }).then(
           (response) => {
@@ -120,7 +131,7 @@ export default class User extends PureComponent {
                   this.setState({rows: []});
                   return;
               }
-              // this.setState({rows: response.data});
+              this.fetchData();
           },
           (err) => {
               console.log(err);
@@ -130,6 +141,40 @@ export default class User extends PureComponent {
           }
       )
   };
+
+  editUser = (id, password, role, username) => {
+      console.log('editUser in............:');
+      console.log(id);
+      console.log(password);
+      console.log(role);
+      console.log(username);
+      axios({
+          method: 'post',
+          url: '/user/update',
+          data: {
+              id : id,
+              password : password,
+              role : role,
+              username : username
+          }
+      }).then(
+          (response) => {
+              console.log(response);
+              if (response.data == null) {
+                  this.setState({rows: []});
+                  return;
+              }
+              this.fetchData();
+              this.closeupModel();
+          },
+          (err) => {
+              console.log(err);
+              if (err.response.status === HttpStatus.UNAUTHORIZED) {
+                  this.props.history.push('/login');
+              }
+          }
+      )
+  }
 
   handleIdChange = (event) => {
       this.setState({id: event.target.value})
@@ -143,9 +188,13 @@ export default class User extends PureComponent {
       this.setState({username: event.target.value})
   };
 
+  deleteId = (event) => {
+      this.deleteUser(event.target.id)
+  };
+
   handleRoleChange = (event) => {
       if(event.target.value == 1){
-          console.log("event.target.value == 1")
+          this.setState({role: 2})
       }else if(event.target.value == 0){
           this.setState({role: 1})
       }
@@ -153,7 +202,7 @@ export default class User extends PureComponent {
 
   renderContent() {
       const {rows} = this.state
-      const tdStyle = {textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', paddingTop: 4 + 'px', paddingBottom: 4 + 'px'};
+      const tdStyle = {textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', paddingTop: 5 + 'px', paddingBottom: 5 + 'px', verticalalign: 'center'};
       if (rows.length == 0) {
           return (
               <tr>
@@ -164,12 +213,15 @@ export default class User extends PureComponent {
           return (
               rows.map((row, index) =>
                   <tr>
-                      <td style={tdStyle} title={row.id}>{row.id}</td>
+                      <td style={tdStyle}  title={row.id}>{row.id}</td>
                       <td style={tdStyle} title={row.password}>{row.password.substring(0,2)}***************</td>
                       <td style={tdStyle} title={row.role}>{row.role}</td>
                       <td style={tdStyle} title={row.username}>{row.username}</td>
-                      <td>
-                          <i className="fa fa-remove fa-lg pr-1" onClick={this.deleteId(row.id)}></i><i className="fa fa-edit fa-lg pl-1"></i>
+                      <td onClick={this.deleteId}>
+                          <i className="fa fa-remove fa-lg pr-1" id={row.id}></i>
+                      </td>
+                      <td onClick={this.handlePassChange}>
+                          <i className="fa fa-edit fa-lg pl-1" id={row.id}></i>
                       </td>
                   </tr>
               )
@@ -198,7 +250,8 @@ export default class User extends PureComponent {
                       <col style={{width: '25%'}}/>
                       <col style={{width: '12%'}}/>
                       <col style={{width: '25%'}}/>
-                      <col style={{width: '13%'}}/>
+                      <col style={{width: '7%'}}/>
+                      <col style={{width: '6%'}}/>
                       <col/>
                     </colgroup>
                     <thead>
@@ -207,6 +260,7 @@ export default class User extends PureComponent {
                       <th style={{verticalAlign: 'middle'}}>Password</th>
                       <th style={{verticalAlign: 'middle'}}>Role</th>
                       <th style={{verticalAlign: 'middle'}}>UserName</th>
+                      <th style={{verticalAlign: 'middle'}}></th>
                       <th style={{verticalAlign: 'middle'}}></th>
                     </tr>
                     </thead>

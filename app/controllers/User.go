@@ -2,6 +2,7 @@ package controllers
 
 import (
 	_ "database/sql"
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/revel/revel"
 	"log"
@@ -97,6 +98,78 @@ func (u User) AddUserSave() revel.Result {
 	CheckErr(err)
 
 	if err != nil {
+		result["auth"] = "fail"
+		revel.INFO.Println("DB Error", err)
+	}
+	result["auth"] = "success"
+
+	return u.RenderJSON(result)
+}
+
+func (u User) DeleteUser() revel.Result {
+	result := make(map[string]interface{})
+	authKey, ok := u.Session["authKey"]
+	if !ok || authKey == "" {
+		u.Response.Status = http.StatusUnauthorized
+		return u.RenderJSON(result)
+	}
+
+	reqParam := make(map[string]interface{})
+	u.Params.BindJSON(&reqParam)
+
+	id := reqParam["id"]
+	revel.INFO.Println("DeleteUser id...====", id)
+
+	DB := dbConn()
+
+	// Modify some data in table.
+	rows, err := DB.Exec("DELETE FROM thx_employee WHERE id=?", id)
+	CheckErr(err)
+
+	rowCount, err := rows.RowsAffected()
+	revel.INFO.Println("Deleted %d row(s) of data.\n", rowCount)
+	revel.INFO.Println("Done.")
+
+	if err != nil {
+		result["auth"] = "fail"
+		revel.INFO.Println("DB Error", err)
+	}
+	result["auth"] = "success"
+
+	return u.RenderJSON(result)
+}
+
+func (u User) UpdateUser() revel.Result {
+	result := make(map[string]interface{})
+	authKey, ok := u.Session["authKey"]
+	if !ok || authKey == "" {
+		u.Response.Status = http.StatusUnauthorized
+		return u.RenderJSON(result)
+	}
+
+	reqParam := make(map[string]interface{})
+	u.Params.BindJSON(&reqParam)
+
+	id := reqParam["id"]
+	password := reqParam["password"]
+	role := reqParam["role"]
+	username := reqParam["username"]
+	revel.INFO.Println("UpdateUser id...====", id)
+	revel.INFO.Println("UpdateUser password...====", password)
+	revel.INFO.Println("UpdateUser role...====", role)
+	revel.INFO.Println("UpdateUser username...====", username)
+
+	DB := dbConn()
+
+	// Modify some data in table.
+	rows, err := DB.Exec("UPDATE thx_employee SET id = ?, password = ?, role = ?, username = ?,  WHERE id = ?", id, password, role, username, id)
+	CheckErr(err)
+	rowCount, err := rows.RowsAffected()
+	fmt.Printf("Update %d row(s) of data.\n", rowCount)
+	fmt.Println("Done.")
+
+	if err != nil {
+		result["auth"] = "fail"
 		revel.INFO.Println("DB Error", err)
 	}
 	result["auth"] = "success"
