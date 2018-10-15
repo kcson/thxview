@@ -107,6 +107,7 @@ export default class User extends PureComponent {
                       this.setState({rows: []});
                       return;
                   }
+                  this.setState({modify: 0});
                   this.fetchData();
                   this.closeupModel();
               },
@@ -168,6 +169,7 @@ export default class User extends PureComponent {
                       this.setState({rows: []});
                       return;
                   }
+                  this.setState({modify: 0});
                   this.fetchData();
               },
               (err) => {
