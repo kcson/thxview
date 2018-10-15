@@ -56,6 +56,9 @@ const routes = [
 
   {path: '/user', name: 'Manage User', component: User},
   {path: '/user/save', name: 'User Add Save', component: User},
+  {path: '/user/delete', name: 'User Delete', component: User},
+  {path: '/user/update', name: 'User Update', component: User},
+  {path: '/user/load', name: 'User Load', component: User},
 ];
 
 export default routes;

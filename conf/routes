@@ -43,6 +43,9 @@ POST    /email/maritime                         Email.SearchMaritime
 
 POST    /user/list                              User.SelectUserList
 POST    /user/save                              User.AddUserSave
+POST    /user/delete                            User.DeleteUser
+POST    /user/update                            User.UpdateUser
+POST    /user/load                              User.LoadUserList
 
 # Ignore favicon requests
 GET     /favicon.ico                            404
