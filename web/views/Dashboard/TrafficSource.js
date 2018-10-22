@@ -26,13 +26,15 @@ class TrafficSource extends Component {
 
   }
 
-  componentDidUpdate(prevProps, prevState) {
-
+  componentDidUpdate(prevProps) {
+    if (this.props.selectedSite !== prevProps.selectedSite) {
+      this.fetchData();
+    }
   }
 
   componentWillUnmount() {
     if (this.timer !== null) {
-      clearInterval(this.locationTimer);
+      clearInterval(this.timer);
     }
   }
 
@@ -74,7 +76,6 @@ class TrafficSource extends Component {
           inflowBuckets.map((row, i) => {
             row.doc_ratio = inflowTotal == 0 ? 0 : (row.doc_count / inflowTotal * 100).toFixed(2);
           });
-          console.log(inflowBuckets);
 
           this.setState({
             inflowTopPage: inflowBuckets

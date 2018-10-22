@@ -27,8 +27,10 @@ class TopPage extends Component {
 
   }
 
-  componentDidUpdate(prevProps, prevState) {
-
+  componentDidUpdate(prevProps) {
+    if (this.props.selectedSite !== prevProps.selectedSite) {
+      this.fetchData();
+    }
   }
 
   componentWillUnmount() {
@@ -75,7 +77,6 @@ class TopPage extends Component {
           visitorBuckets.map((row, i) => {
             row.doc_ratio = visitorTotal == 0 ? 0 : (row.doc_count / visitorTotal * 100).toFixed(2);
           });
-          console.log(visitorBuckets)
           const memberBuckets = response.data.member_top.aggregations.member_top.buckets;
           memberBuckets.map((row, i) => {
             row.doc_ratio = memberTotal == 0 ? 0 : (row.doc_count / memberTotal * 100).toFixed(2);

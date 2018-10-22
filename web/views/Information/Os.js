@@ -23,6 +23,13 @@ export default class Os extends Component {
     this.fetchData();
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.selectedSite !== prevProps.selectedSite) {
+      this.fetchData()
+    }
+  }
+
+
   fetchData = () => {
     const {fromDate, toDate, osName} = this.state;
     axios({

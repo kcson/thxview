@@ -4,11 +4,23 @@ import (
 	"context"
 	"fmt"
 	"github.com/revel/revel"
+	"github.com/thxcloud/thxview/app/db"
 	"log"
+	"time"
 )
 
 type App struct {
 	*revel.Controller
+}
+
+type Site struct {
+	Id         int       `db:"id" json:"id"`
+	Title      string    `db:"title" json:"title"`
+	Url        string    `db:"url" json:"url"`
+	TrackingId string    `db:"tracking_id" json:"tracking_id"`
+	Desc       string    `db:"desc" json:"desc"`
+	EntryDate  time.Time `db:"entry_date" json:"entry_date"`
+	UpdateDate time.Time `db:"update_date" json:"update_date"`
 }
 
 func (c App) Index() revel.Result {
@@ -38,38 +50,30 @@ func (c App) CreateSession() revel.Result {
 
 	//Login Check start
 	if username != nil && password != nil {
-
-		DB := dbConn()
-
-		rows, err := DB.QueryContext(ctx, "SELECT id,password,role,username FROM thx_employee WHERE id=?", username)
+		rows, err := db.DB.QueryxContext(ctx, "SELECT id,password,role,username FROM thx_employee WHERE id=?", username)
 		if err != nil {
 			log.Fatal(err)
 		}
 		defer rows.Close()
 
 		type userInfo struct {
-			id       string
-			password string
-			role     int
-			username string
+			Id       string `db:"id"`
+			Password string `db:"password"`
+			Role     int    `db:"role"`
+			Username string `db:"username"`
 		}
 
 		var items []userInfo
 		for rows.Next() {
 			item := userInfo{}
 
-			err := rows.Scan(
-				&item.id,
-				&item.password,
-				&item.role,
-				&item.username,
-			)
+			err := rows.StructScan(&item)
 			CheckErr(err)
 
-			revel.INFO.Println("Item id :", item.id)
-			revel.INFO.Println("Item password :", item.password)
-			revel.INFO.Println("Item role :", item.role)
-			revel.INFO.Println("Item username :", item.username)
+			revel.AppLog.Infof("Item id : %s", item.Id)
+			revel.AppLog.Infof("Item password : %s", item.Password)
+			revel.AppLog.Infof("Item role : %d", item.Role)
+			revel.AppLog.Infof("Item username : %s", item.Username)
 
 			items = append(items, item)
 		}
@@ -82,12 +86,44 @@ func (c App) CreateSession() revel.Result {
 			return c.Redirect(App.Index)
 		}
 
-		if len(items) > 0 && password == items[0].password {
+		var sites []Site
+		if len(items) > 0 && password == items[0].Password {
 			c.Session["authKey"] = "authKey"
 			c.Session["userName"] = username.(string)
 			result["auth"] = "success"
-			result["role"] = items[0].role
+			result["role"] = items[0].Role
+			result["user_id"] = items[0].Id
+			result["user_name"] = items[0].Username
 
+			//관리 사이트
+			rows, err := db.DB.Queryx("SELECT "+
+				"b.id,"+
+				"b.title,"+
+				"b.url,"+
+				"b.tracking_id,"+
+				"b.desc,"+
+				"b.entry_date,"+
+				"b.update_date"+
+				" FROM "+
+				"user_site a INNER JOIN site b ON a.site_id = b.id "+
+				" WHERE "+
+				"a.user_id=?", username)
+			if err != nil {
+				revel.AppLog.Error(err.Error())
+				result["sites"] = sites
+				return c.RenderJSON(result)
+			}
+
+			for rows.Next() {
+				site := Site{}
+				err := rows.StructScan(&site)
+				if err != nil {
+					revel.AppLog.Error(err.Error())
+					break
+				}
+				sites = append(sites, site)
+			}
+			result["sites"] = sites
 			return c.RenderJSON(result)
 			//return c.Redirect(App.Dashboard)
 		} else {

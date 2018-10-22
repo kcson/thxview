@@ -178,9 +178,18 @@ class ActivitySummary extends Component {
     this.fetchTopPage();
     this.fetchSignUp();
     this.fetchPurchase();
-
-    this.fetchMapData();
   }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.selectedSite !== prevProps.selectedSite) {
+      this.fetchVisitUser();
+      this.fetchVisitChange();
+      this.fetchTopPage();
+      this.fetchSignUp();
+      this.fetchPurchase();
+    }
+  }
+
 
   fetchPurchase = () => {
     const {purchaseInterval} = this.state;
@@ -522,16 +531,6 @@ class ActivitySummary extends Component {
         }
     )
 
-  };
-
-  fetchMapData = () => {
-    axios
-        .get("/public/static/world-most-populous-cities.json")
-        .then(res => {
-          this.setState({
-            cities: res.data,
-          })
-        })
   };
 
   onDropDownClick = (e) => {

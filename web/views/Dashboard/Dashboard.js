@@ -148,6 +148,16 @@ class Dashboard extends Component {
   purchaseTimer = null;
   browserTimer = null;
 
+  componentDidUpdate(prevProps) {
+    if (this.props.selectedSite !== prevProps.selectedSite) {
+      this.fetchActiveUser();
+      this.fetchPageView();
+      this.fetchConversion();
+      this.fetchPurchase();
+      this.fetchBrowser();
+    }
+  }
+
   componentDidMount() {
     this.fetchActiveUser();
     this.fetchPageView();
@@ -174,10 +184,6 @@ class Dashboard extends Component {
     this.browserTimer = setInterval(() => {
       this.fetchBrowser();
     }, 20 * 1000);
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-
   }
 
   componentWillUnmount() {
@@ -227,7 +233,6 @@ class Dashboard extends Component {
       }
     }).then(
         (response) => {
-          console.log(response);
           if (response.data == null) {
             this.setState({browserChartData: doughnut_browser});
             return;
@@ -278,11 +283,10 @@ class Dashboard extends Component {
       data: {
         fromDate: toDay,
         toDate: toDay,
-        timeZone: moment.tz.guess()
+        timeZone: moment.tz.guess(),
       }
     }).then(
         (response) => {
-          console.log(response);
           const visitorRatio = response.data.activeuser_count == 0 ? 0 : (response.data.visitor_count / response.data.activeuser_count * 100).toFixed(2);
           const memberRatio = response.data.activeuser_count == 0 ? 0 : (response.data.member_count / response.data.activeuser_count * 100).toFixed(2);
           const pcRatio = response.data.activeuser_count == 0 ? 0 : (response.data.pc_count / response.data.activeuser_count * 100).toFixed(2);
@@ -424,7 +428,6 @@ class Dashboard extends Component {
       }
     }).then(
         (response) => {
-          console.log(response);
           this.setState({
             visitUser: response.data.visit_user,
             signupUser: response.data.signup_user,
@@ -478,7 +481,6 @@ class Dashboard extends Component {
       }
     }).then(
         (response) => {
-          console.log(response);
           this.setState({
             purchaseCount: response.data.purchase_count,
             purchasePrice: response.data.purchase_price,
@@ -717,16 +719,16 @@ class Dashboard extends Component {
               </Card>
             </Col>
           </Row>
-          <TopPage/>
+          <TopPage selectedSite={this.props.selectedSite}/>
           <Row>
-            <TrafficSource/>
+            <TrafficSource selectedSite={this.props.selectedSite}/>
           </Row>
           <Row>
-            <OS/>
-            <Browser/>
+            <OS selectedSite={this.props.selectedSite}/>
+            <Browser selectedSite={this.props.selectedSite}/>
           </Row>
           <Row>
-            <ActiveLocation/>
+            <ActiveLocation selectedSite={this.props.selectedSite}/>
           </Row>
         </div>
     );

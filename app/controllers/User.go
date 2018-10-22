@@ -1,10 +1,9 @@
 package controllers
 
 import (
-	_ "database/sql"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/revel/revel"
+	"github.com/thxcloud/thxview/app/db"
 	"log"
 	"net/http"
 )
@@ -32,8 +31,7 @@ func (u User) SelectUserList() revel.Result {
 	var reqParam = make(map[string]interface{})
 	u.Params.BindJSON(&reqParam)
 
-	DB := dbConn()
-	rows, err := DB.QueryContext(ctx, "SELECT id,password,role,username FROM thx_employee order by ?", "desc")
+	rows, err := db.DB.QueryContext(ctx, "SELECT id,password,role,username FROM thx_employee order by ?", "desc")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -76,8 +74,7 @@ func (u User) LoadUserList() revel.Result {
 
 	id := reqParam["id"]
 	revel.INFO.Println("LoadUserList id...====", id)
-	DB := dbConn()
-	rows, err := DB.QueryContext(ctx, "SELECT id,password,role,username FROM thx_employee WHERE id= ?", id)
+	rows, err := db.DB.QueryContext(ctx, "SELECT id,password,role,username FROM thx_employee WHERE id= ?", id)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -128,9 +125,8 @@ func (u User) AddUserSave() revel.Result {
 	//revel.INFO.Println("AddUserSave username...====", username)
 
 	if id != nil && username != nil && password != nil && role != nil {
-		DB := dbConn()
 		// Insert
-		stmt, err := DB.Prepare("INSERT thx_employee SET id=?,password=?, role=?, username=?")
+		stmt, err := db.DB.Prepare("INSERT thx_employee SET id=?,password=?, role=?, username=?")
 		CheckErr(err)
 
 		res, err := stmt.Exec(id, password, role, username)
@@ -170,10 +166,8 @@ func (u User) DeleteUser() revel.Result {
 	revel.INFO.Println("DeleteUser id...====", id)
 
 	if id != nil {
-		DB := dbConn()
-
 		// Modify some data in table.
-		rows, err := DB.Exec("DELETE FROM thx_employee WHERE id=?", id)
+		rows, err := db.DB.Exec("DELETE FROM thx_employee WHERE id=?", id)
 		CheckErr(err)
 
 		rowCount, err := rows.RowsAffected()
@@ -213,10 +207,8 @@ func (u User) UpdateUser() revel.Result {
 	//revel.INFO.Println("UpdateUser username...====", username)
 
 	if id != nil && username != nil && password != nil && role != nil {
-		DB := dbConn()
-
 		// Modify some data in table.
-		rows, err := DB.Exec("UPDATE thx_employee SET password = ?, role = ?, username = ?  WHERE id = ?", password, role, username, id)
+		rows, err := db.DB.Exec("UPDATE thx_employee SET password = ?, role = ?, username = ?  WHERE id = ?", password, role, username, id)
 		CheckErr(err)
 		rowCount, err := rows.RowsAffected()
 		fmt.Printf("Update %d row(s) of data.\n", rowCount)

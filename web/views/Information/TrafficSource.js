@@ -46,6 +46,12 @@ export default class TrafficSource extends Component {
     this.fetchData();
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.selectedSite !== prevProps.selectedSite) {
+      this.fetchData()
+    }
+  }
+
   fetchData = () => {
     const {fromDate, toDate, path} = this.state;
     axios({

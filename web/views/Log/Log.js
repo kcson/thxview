@@ -53,6 +53,10 @@ export default class Log extends PureComponent {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
+    if (this.props.selectedSite !== nextProps.selectedSite) {
+      return true
+    }
+
     if (this.state.fromDate !== nextState.fromDate) {
       return true;
     }
@@ -68,6 +72,26 @@ export default class Log extends PureComponent {
       return false;
     }
     return true;
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.selectedSite !== prevProps.selectedSite) {
+      this.setState({
+        searchAfterDate: 0,
+        searchAfterId: "",
+        searchBeforeDate: 0,
+        searchBeforeId: "",
+        //activePage: 1,
+        //totalPage: 0,
+        activeBlock: 1,
+        totalBlock: 0,
+        ascending: false
+      }, () => {
+        this.searchClicked = true;
+        this.activePage = 1;
+        this.fetchData();
+      });
+    }
   }
 
   fetchData() {
@@ -101,6 +125,11 @@ export default class Log extends PureComponent {
     }).then(
         (response) => {
           console.log(response);
+          if (response.data == null) {
+            this.setState({rows: [], totalPage: 0});
+            return;
+          }
+
           let totalPage = Math.ceil(response.data.hits.total / this.ROW_PER_PAGE);
           let totalBlock = Math.ceil(totalPage / this.PAGE_PER_BLOCK);
           const dataRows = [];

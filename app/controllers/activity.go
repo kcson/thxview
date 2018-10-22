@@ -1,13 +1,12 @@
 package controllers
 
 import (
-	"github.com/revel/revel"
-	"net/http"
-	"github.com/thxcloud/thxview/app/elasticsearch"
-	"github.com/olivere/elastic"
 	"context"
+	"github.com/olivere/elastic"
+	"github.com/revel/revel"
+	"github.com/thxcloud/thxview/app/elasticsearch"
 	"math"
-	"fmt"
+	"net/http"
 )
 
 type Activity struct {
@@ -40,6 +39,8 @@ type Purchase struct {
 }
 
 func (a Activity) SummaryVisitUser() revel.Result {
+	index := a.Params.Get("trackingId") + "-*"
+
 	result := make(map[string]interface{})
 	authKey, ok := a.Session["authKey"]
 	if !ok || authKey == "" {
@@ -66,7 +67,7 @@ func (a Activity) SummaryVisitUser() revel.Result {
 	memberAggs := elastic.NewTermsAggregation().Field("member_yn").SubAggregation("user_count", totalAggs)
 	userAggs := elastic.NewTermsAggregation().Field("first_visit").SubAggregation("user_count", totalAggs)
 	user, err := elasticsearch.Client.Search().
-		Index("logstash-*").
+		Index(index).
 		Size(0).
 		Aggregation("total_user", totalAggs).
 		Aggregation("member", memberAggs).
@@ -109,6 +110,8 @@ func (a Activity) SummaryVisitUser() revel.Result {
 }
 
 func (a Activity) SummaryVisitChange() revel.Result {
+	index := a.Params.Get("trackingId") + "-*"
+
 	result := make(map[string]interface{})
 	authKey, ok := a.Session["authKey"]
 	if !ok || authKey == "" {
@@ -145,7 +148,7 @@ func (a Activity) SummaryVisitChange() revel.Result {
 	vUserAggs.SubAggregation("visit_count", userCountAggs)
 
 	resultAggs, err := elasticsearch.Client.Search().
-		Index("logstash-*").
+		Index(index).
 		Size(0).
 		Aggregation("visit_user", vUserAggs).
 		Query(boolQuery).
@@ -197,6 +200,8 @@ func (a Activity) SummaryVisitChange() revel.Result {
 }
 
 func (a Activity) SummaryTopPage() revel.Result {
+	index := a.Params.Get("trackingId") + "-*"
+
 	result := make(map[string]interface{})
 	authKey, ok := a.Session["authKey"]
 	if !ok || authKey == "" {
@@ -221,7 +226,7 @@ func (a Activity) SummaryTopPage() revel.Result {
 	boolQuery := elastic.NewBoolQuery().Must(rangeQuery)
 	termAggs := elastic.NewTermsAggregation().Field("request.keyword").Size(5)
 	resultAggs, err := elasticsearch.Client.Search().
-		Index("logstash-*").
+		Index(index).
 		Size(0).
 		Aggregation("top_page", termAggs).
 		Query(boolQuery).
@@ -250,6 +255,8 @@ func (a Activity) SummaryTopPage() revel.Result {
 }
 
 func (a Activity) SummarySignUp() revel.Result {
+	index := a.Params.Get("trackingId") + "-*"
+
 	result := make(map[string]interface{})
 	authKey, ok := a.Session["authKey"]
 	if !ok || authKey == "" {
@@ -280,7 +287,7 @@ func (a Activity) SummarySignUp() revel.Result {
 	result["return_visit"] = 0
 
 	resultAggs, err := elasticsearch.Client.Search().
-		Index("logstash-*").
+		Index(index).
 		Size(0).
 		Aggregation("sign_up", termAggs).
 		Query(boolQuery).
@@ -307,6 +314,8 @@ func (a Activity) SummarySignUp() revel.Result {
 }
 
 func (a Activity) SummaryPurchase() revel.Result {
+	index := a.Params.Get("trackingId") + "-*"
+
 	result := make(map[string]interface{})
 	authKey, ok := a.Session["authKey"]
 	if !ok || authKey == "" {
@@ -337,7 +346,7 @@ func (a Activity) SummaryPurchase() revel.Result {
 	result["member"] = 0
 
 	resultAggs, err := elasticsearch.Client.Search().
-		Index("logstash-*").
+		Index(index).
 		Size(0).
 		Aggregation("purchase", termAggs).
 		Query(boolQuery).
@@ -364,6 +373,8 @@ func (a Activity) SummaryPurchase() revel.Result {
 }
 
 func (a Activity) PageView() revel.Result {
+	index := a.Params.Get("trackingId") + "-*"
+
 	result := make(map[string]interface{})
 	authKey, ok := a.Session["authKey"]
 	if !ok || authKey == "" {
@@ -396,7 +407,7 @@ func (a Activity) PageView() revel.Result {
 	}
 
 	resultAggs, err := elasticsearch.Client.Search().
-		Index("logstash-*").
+		Index(index).
 		Size(0).
 		Aggregation("page_view", termAggs).
 		Query(boolQuery).
@@ -442,6 +453,8 @@ func (a Activity) PageView() revel.Result {
 }
 
 func (a Activity) Purchase() revel.Result {
+	index := a.Params.Get("trackingId") + "-*"
+
 	result := make(map[string]interface{})
 	authKey, ok := a.Session["authKey"]
 	if !ok || authKey == "" {
@@ -453,12 +466,6 @@ func (a Activity) Purchase() revel.Result {
 
 	requestParams := make(map[string]interface{})
 	a.Params.BindJSON(&requestParams)
-
-	fmt.Println(requestParams["fromDate"])
-	fmt.Println(requestParams["toDate"])
-	fmt.Println(requestParams["format"])
-	fmt.Println(requestParams["interval"])
-	fmt.Println(requestParams["timeZone"])
 
 	rangeQuery := elastic.NewRangeQuery("@timestamp").
 		Gte(requestParams["fromDate"]).
@@ -480,7 +487,7 @@ func (a Activity) Purchase() revel.Result {
 
 	boolQuery := elastic.NewBoolQuery().Must(rangeQuery)
 	resultAggs, err := elasticsearch.Client.Search().
-		Index("logstash-*").
+		Index(index).
 		Size(0).
 		Aggregation("purchase_nested", nestedAggs).
 		Query(boolQuery).

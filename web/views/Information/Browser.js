@@ -23,6 +23,12 @@ export default class Browser extends Component {
     this.fetchData();
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.selectedSite !== prevProps.selectedSite) {
+      this.fetchData();
+    }
+  }
+
   fetchData = () => {
     const {fromDate, toDate, browserName} = this.state;
     axios({

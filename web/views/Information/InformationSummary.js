@@ -96,7 +96,6 @@ class InformationSummary extends Component {
       osInterval: 1,
       browserInterval: 1,
       toDay: moment(new Date()).format('YYYY-MM-DD'),
-      cities: [],
       inflowTopPage: [],
       osChartData: {
         labels: [],
@@ -130,38 +129,22 @@ class InformationSummary extends Component {
     }
   };
 
-  //inflowTimer = null;
-
   componentDidMount() {
     this.fetchInflow();
     this.fetchOS();
     this.fetchBrowser();
-
-    this.fetchMapData();
-    // this.inflowTimer = setInterval(() => {
-    //   this.fetchInflow();
-    // }, 20 * 1000);
   }
 
-  componentDidUpdate(prevProps, prevState) {
-
+  componentDidUpdate(prevProps) {
+    if (this.props.selectedSite !== prevProps.selectedSite) {
+      this.fetchInflow();
+      this.fetchOS();
+      this.fetchBrowser();
+    }
   }
 
   componentWillUnmount() {
-    // if (this.inflowTimer !== null) {
-    //   clearInterval(this.inflowTimer);
-    // }
   }
-
-  fetchMapData = () => {
-    axios
-        .get("/public/static/world-most-populous-cities.json")
-        .then(res => {
-          this.setState({
-            cities: res.data,
-          })
-        })
-  };
 
   fetchBrowser() {
     const {browserInterval} = this.state;
@@ -544,7 +527,7 @@ class InformationSummary extends Component {
             </Col>
           </Row>
           <Row>
-            <LocationOverview/>
+            <LocationOverview selectedSite={this.props.selectedSite}/>
           </Row>
         </div>
     );

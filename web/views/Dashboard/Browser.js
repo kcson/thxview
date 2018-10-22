@@ -48,8 +48,10 @@ class Browser extends Component {
 
   }
 
-  componentDidUpdate(prevProps, prevState) {
-
+  componentDidUpdate(prevProps) {
+    if (this.props.selectedSite !== prevProps.selectedSite) {
+      this.fetchData();
+    }
   }
 
   componentWillUnmount() {
@@ -98,7 +100,6 @@ class Browser extends Component {
       }
     }).then(
         (response) => {
-          console.log(response);
           if (response.data == null) {
             this.setState({browserChartData: doughnut_browser});
             return;

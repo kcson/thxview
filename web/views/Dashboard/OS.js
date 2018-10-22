@@ -41,7 +41,6 @@ class OS extends Component {
 
   doughnut_os_options = {
     onClick: (event, items) => {
-      console.log(items.length);
       if (items.length == 0) {
         return;
       }
@@ -69,8 +68,10 @@ class OS extends Component {
 
   }
 
-  componentDidUpdate(prevProps, prevState) {
-
+  componentDidUpdate(prevProps) {
+    if (this.props.selectedSite !== prevProps.selectedSite) {
+      this.fetchData();
+    }
   }
 
   componentWillUnmount() {
@@ -119,7 +120,6 @@ class OS extends Component {
       }
     }).then(
         (response) => {
-          console.log(response);
           const detail = [];
           const labels = [];
           const data = [];

@@ -27,6 +27,12 @@ class LocationOverview extends Component {
     this.fetchData();
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.selectedSite !== prevProps.selectedSite) {
+      this.fetchData()
+    }
+  }
+
   // shouldComponentUpdate(nextProps, nextState) {
   //   console.log(this.state.interval + ' : ' + nextState.interval);
   //   return this.state.interval !== nextState.interval;

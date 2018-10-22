@@ -50,6 +50,10 @@ export default class Conversion extends Component {
     //this.fetchData();
   }
 
+  componentDidUpdate(prevProps) {
+
+  }
+
   fetchData() {
     let fromDate = this.state.received + '||/d';
     let toDate = this.state.received + '||/d';

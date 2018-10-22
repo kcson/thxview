@@ -47,6 +47,12 @@ export default class PageView extends Component {
     this.fetchData();
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.selectedSite !== prevProps.selectedSite) {
+      this.fetchData();
+    }
+  }
+
   fetchData() {
     const {fromDate, toDate, activePage, pageName} = this.state;
 
@@ -59,7 +65,7 @@ export default class PageView extends Component {
         timeZone: moment.tz.guess(),
         from: (activePage - 1) * 10,
         size: this.ROW_PER_PAGE,
-        pageName : pageName
+        pageName: pageName
       }
     }).then(
         (response) => {

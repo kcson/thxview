@@ -1,12 +1,11 @@
 package controllers
 
 import (
-	"github.com/revel/revel"
-	"fmt"
 	"context"
-	"net/http"
 	"github.com/olivere/elastic"
+	"github.com/revel/revel"
 	"github.com/thxcloud/thxview/app/elasticsearch"
+	"net/http"
 	"strings"
 )
 
@@ -15,6 +14,8 @@ type Log struct {
 }
 
 func (l Log) SearchLog() revel.Result {
+	index := l.Params.Get("trackingId") + "-*"
+
 	//session check
 	result := make(map[string]interface{})
 	authKey, ok := l.Session["authKey"]
@@ -59,18 +60,16 @@ func (l Log) SearchLog() revel.Result {
 		Sort("_id", ascending)
 
 	searchService := elasticsearch.Client.Search().
-		Index("logstash-*").
+		Index(index).
 		SearchSource(searchSource).
 		Size(50)
 	if searchAfterDate.(float64) > 0 && strings.Compare(searchAfterId.(string),"") != 0{
-		fmt.Println(searchAfterDate)
-		fmt.Println(searchAfterId)
 		searchService = searchService.SearchAfter(searchAfterDate, searchAfterId)
 	}
 	results, err := searchService.Do(ctx)
 	if err != nil {
-		fmt.Println(err.Error())
-		l.Response.Status = http.StatusInternalServerError
+		revel.AppLog.Error(err.Error())
+		//l.Response.Status = http.StatusInternalServerError
 	}
 
 	return l.RenderJSON(results)

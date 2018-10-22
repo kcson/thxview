@@ -36,6 +36,8 @@ type Browser struct {
 }
 
 func (i Information) SummaryOS() revel.Result {
+	index := i.Params.Get("trackingId") + "-*"
+
 	result := make(map[string]interface{})
 	authKey, ok := i.Session["authKey"]
 	if !ok || authKey == "" {
@@ -60,7 +62,7 @@ func (i Information) SummaryOS() revel.Result {
 	boolQuery := elastic.NewBoolQuery().Must(rangeQuery)
 	termAggs := elastic.NewTermsAggregation().Field("os_name.keyword").Size(10)
 	os, err := elasticsearch.Client.Search().
-		Index("logstash-*").
+		Index(index).
 		Size(0).
 		Aggregation("os", termAggs).
 		Query(boolQuery).
@@ -119,6 +121,8 @@ func (i Information) SummaryOS() revel.Result {
 }
 
 func (i Information) SummaryBrowser() revel.Result {
+	index := i.Params.Get("trackingId") + "-*"
+
 	result := make(map[string]interface{})
 	authKey, ok := i.Session["authKey"]
 	if !ok || authKey == "" {
@@ -142,7 +146,7 @@ func (i Information) SummaryBrowser() revel.Result {
 	boolQuery := elastic.NewBoolQuery().Must(rangeQuery)
 	termAggs := elastic.NewTermsAggregation().Field("name.keyword").Size(10)
 	os, err := elasticsearch.Client.Search().
-		Index("logstash-*").
+		Index(index).
 		Size(0).
 		Aggregation("browser", termAggs).
 		Query(boolQuery).
@@ -166,6 +170,8 @@ func (i Information) SummaryBrowser() revel.Result {
 }
 
 func (i Information) TrafficSource() revel.Result {
+	index := i.Params.Get("trackingId") + "-*"
+
 	result := make(map[string]interface{})
 	authKey, ok := i.Session["authKey"]
 	if !ok || authKey == "" {
@@ -205,7 +211,7 @@ func (i Information) TrafficSource() revel.Result {
 	}
 
 	source, err := elasticsearch.Client.Search().
-		Index("logstash-*").
+		Index(index).
 		Size(0).
 		Aggregation("traffic_source", termAggs).
 		Query(boolQuery).
@@ -252,6 +258,8 @@ func (i Information) TrafficSource() revel.Result {
 }
 
 func (i Information) OS() revel.Result {
+	index := i.Params.Get("trackingId") + "-*"
+
 	result := make(map[string]interface{})
 	authKey, ok := i.Session["authKey"]
 	if !ok || authKey == "" {
@@ -290,7 +298,7 @@ func (i Information) OS() revel.Result {
 	}
 
 	source, err := elasticsearch.Client.Search().
-		Index("logstash-*").
+		Index(index).
 		Size(0).
 		Aggregation("os", termAggs).
 		Query(boolQuery).
@@ -337,6 +345,8 @@ func (i Information) OS() revel.Result {
 }
 
 func (i Information) Browser() revel.Result {
+	index := i.Params.Get("trackingId") + "-*"
+
 	result := make(map[string]interface{})
 	authKey, ok := i.Session["authKey"]
 	if !ok || authKey == "" {
@@ -375,7 +385,7 @@ func (i Information) Browser() revel.Result {
 	}
 
 	source, err := elasticsearch.Client.Search().
-		Index("logstash-*").
+		Index(index).
 		Size(0).
 		Aggregation("browser", termAggs).
 		Query(boolQuery).
@@ -422,6 +432,8 @@ func (i Information) Browser() revel.Result {
 }
 
 func (i Information) Location() revel.Result {
+	index := i.Params.Get("trackingId") + "-*"
+
 	result := make(map[string]interface{})
 	authKey, ok := i.Session["authKey"]
 	if !ok || authKey == "" {
@@ -471,7 +483,7 @@ func (i Information) Location() revel.Result {
 	}
 
 	source, err := elasticsearch.Client.Search().
-		Index("logstash-*").
+		Index(index).
 		Size(0).
 		Aggregation("location", termAggs).
 		Query(boolQuery).

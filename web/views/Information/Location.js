@@ -26,9 +26,12 @@ export default class Browser extends Component {
     this.fetchData();
   }
 
-  componentDidUpdate() {
-    console.log("componentDidUpdate");
+  componentDidUpdate(prevProps) {
+    if (this.props.selectedSite !== prevProps.selectedSite) {
+      this.fetchData()
+    }
   }
+
 
   fetchData = () => {
     const {fromDate, toDate, countryName} = this.state;

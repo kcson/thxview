@@ -34,8 +34,10 @@ class ActiveLocation extends Component {
 
   }
 
-  componentDidUpdate(prevProps, prevState) {
-
+  componentDidUpdate(prevProps) {
+    if (this.props.selectedSite !== prevProps.selectedSite) {
+      this.fetchData();
+    }
   }
 
   componentWillUnmount() {
@@ -75,7 +77,6 @@ class ActiveLocation extends Component {
       }
     }).then(
         (response) => {
-          console.log(response);
           if (response.data.locations === null) {
             this.setState({locations: [], center: {lat: 36.8929, lng: -76.1468}});
             return;
