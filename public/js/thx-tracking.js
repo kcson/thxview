@@ -19,7 +19,7 @@ let setCookie = function (tracking_id = 'thx_view', name = 'thx_id', value, exp 
 
   let cookie = getCookie(name);
   if (!cookie) {
-    document.cookie = name + '=' + value + ';expires=' + date.toUTCString();
+    document.cookie = name + '=' + value + ';expires=' + date.toUTCString() + ';path=/';
   }
   else {
     value = cookie;
@@ -27,12 +27,12 @@ let setCookie = function (tracking_id = 'thx_view', name = 'thx_id', value, exp 
 
   let trace = getCookie('tracking_id');
   if (!trace) {
-    document.cookie = 'tracking_id=' + tracking_id + ';expires=' + date.toUTCString();
+    document.cookie = 'tracking_id=' + tracking_id + ';expires=' + date.toUTCString() + ';path=/';
   }
 
   return value;
 };
 
-let setTracking = function (tracking_id, name = 'thx_id', exp = 365) {
+let setTracking = function (tracking_id, name = 'thx_id', exp = 730) {
   return setCookie(tracking_id, name, uuid(), exp)
 };
