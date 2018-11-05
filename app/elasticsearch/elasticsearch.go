@@ -15,7 +15,6 @@ func Init() {
 	}
 	httpClient := &http.Client{Transport: tr}
 
-
 	elasticClient, err := elastic.NewClient(
 		elastic.SetHttpClient(httpClient),
 		elastic.SetURL("https://thxlab.com:9200"),

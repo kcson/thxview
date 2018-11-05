@@ -13,7 +13,7 @@ let getCookie = function (name) {
   return value ? value[2] : null;
 };
 
-let setCookie = function (tracking_id = 'thx_view', name = 'thx_id', value, exp = 365) {
+let setCookie = function (tracking_id, name, value, exp) {
   let date = new Date();
   date.setTime(date.getTime() + exp * 24 * 60 * 60 * 1000);
 
@@ -33,6 +33,6 @@ let setCookie = function (tracking_id = 'thx_view', name = 'thx_id', value, exp 
   return value;
 };
 
-let setTracking = function (tracking_id, name = 'thx_id', exp = 730) {
-  return setCookie(tracking_id, name, uuid(), exp)
+let setTracking = function (tracking_id) {
+  return setCookie(tracking_id, 'thx_id', uuid(), 730)
 };
