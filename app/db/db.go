@@ -5,6 +5,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/revel/revel"
 	"github.com/thxcloud/thxview/app/util"
+	"time"
 )
 
 var DB *sqlx.DB
@@ -21,8 +22,16 @@ func Init() {
 	dbName, _ := util.Decrypt([]byte(key), dbNamestr)
 
 	var err error
-	DB, err = sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+dbName + "?parseTime=true")
+	DB, err = sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+dbName+"?parseTime=true")
 	if err != nil {
 		panic(err.Error())
 	}
+
+	go func() {
+		time.Sleep(time.Minute * 5)
+		err := DB.Ping()
+		if err != nil {
+			revel.AppLog.Error(err.Error())
+		}
+	}()
 }
