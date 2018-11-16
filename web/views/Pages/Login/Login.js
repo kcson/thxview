@@ -42,7 +42,8 @@ class Login extends Component {
             sessionStorage.username = response.data.user_name;//this.state.username;
             sessionStorage.role = response.data.role;
             sessionStorage.sites = JSON.stringify(response.data.sites);
-            console.log(sessionStorage.sites);
+            sessionStorage.menus = JSON.stringify(response.data.menus);
+            //console.log(sessionStorage.sites);
             this.props.history.push('/');
           }else{
               console.log(response.data.auth)

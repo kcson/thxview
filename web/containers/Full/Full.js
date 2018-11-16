@@ -19,6 +19,7 @@ import routes from '../../routes';
 import FullAside from './FullAside';
 import FullHeader from './FullHeader';
 import axios from "axios";
+import messages from "../../views/Util/Messages";
 
 class Full extends Component {
   constructor(props) {
@@ -57,18 +58,55 @@ class Full extends Component {
     } else {
       axios.defaults.headers.common['X-THX-INDEX'] = selectedSite;
     }
+
+    let mRoleArray = null;//['M_DASHBOARD','M_INFO','M_ACTIVITY','M_ACCESS_LOG','M_REPORT','M_SETTING'];
     const role = sessionStorage.role;
+    const menus = sessionStorage.menus;
+    if (menus) {
+      mRoleArray = JSON.parse(menus);
+    }
 
     const items = [];
-    navigation.items.map(d => {
-      if (d.role) {
-        if (d.role.includes(Number(role))) {
-          //console.log(d)
-          items.push(d);
+    const items1 = [];
+    if (role) {
+      navigation.items.map(d => {
+        if (d.role) {
+          if (d.role.includes(Number(role))) {
+            //console.log(d)
+            items.push(d);
+          }
         }
-      }
-    });
-    const nav = {items};
+      });
+    }
+    console.log(items);
+    if (mRoleArray) {
+      items.map(d => {
+        if (d.m_role) {
+          if (mRoleArray.includes(d.m_role[0])) {
+            let item = {};
+            item.name = d.name;
+            item.url = d.url;
+            item.icon = d.icon;
+            if (d.children) {
+              item.children = [];
+              d.children.map((child) => {
+                if (child.m_role) {
+                  if (mRoleArray.includes(child.m_role[0])) {
+                    item.children.push(child);
+                  }
+                }
+              })
+            }
+            //console.log(d)
+            items1.push(item);
+          }
+        }
+      });
+    }
+
+    let nav = {};
+    nav.items = items1;
+    console.log(nav);
 
     if (!sessionStorage.userid) {
       return (

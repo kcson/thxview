@@ -5,22 +5,12 @@ import (
 	"fmt"
 	"github.com/revel/revel"
 	"github.com/thxcloud/thxview/app/db"
+	"github.com/thxcloud/thxview/app/mapper"
 	"log"
-	"time"
 )
 
 type App struct {
 	*revel.Controller
-}
-
-type Site struct {
-	Id         int       `db:"id" json:"id"`
-	Title      string    `db:"title" json:"title"`
-	Url        string    `db:"url" json:"url"`
-	TrackingId string    `db:"tracking_id" json:"tracking_id"`
-	Desc       string    `db:"desc" json:"desc"`
-	EntryDate  time.Time `db:"entry_date" json:"entry_date"`
-	UpdateDate time.Time `db:"update_date" json:"update_date"`
 }
 
 func (c App) Index() revel.Result {
@@ -86,7 +76,6 @@ func (c App) CreateSession() revel.Result {
 			return c.Redirect(App.Index)
 		}
 
-		var sites []Site
 		if len(items) > 0 && password == items[0].Password {
 			c.Session["authKey"] = "authKey"
 			c.Session["userName"] = username.(string)
@@ -96,34 +85,21 @@ func (c App) CreateSession() revel.Result {
 			result["user_name"] = items[0].Username
 
 			//관리 사이트
-			rows, err := db.DB.Queryx("SELECT "+
-				"b.id,"+
-				"b.title,"+
-				"b.url,"+
-				"b.tracking_id,"+
-				"b.desc,"+
-				"b.entry_date,"+
-				"b.update_date"+
-				" FROM "+
-				"user_site a INNER JOIN site b ON a.site_id = b.id "+
-				" WHERE "+
-				"a.user_id=?", username)
+			sites, err := mapper.SelectUserSiteByUserId(username.(string))
 			if err != nil {
 				revel.AppLog.Error(err.Error())
-				result["sites"] = sites
 				return c.RenderJSON(result)
 			}
-
-			for rows.Next() {
-				site := Site{}
-				err := rows.StructScan(&site)
-				if err != nil {
-					revel.AppLog.Error(err.Error())
-					break
-				}
-				sites = append(sites, site)
-			}
 			result["sites"] = sites
+
+			//권한이 있는 메뉴
+			menus, err := mapper.SelectUserMenuByUserId(username.(string))
+			if err != nil {
+				revel.AppLog.Error(err.Error())
+				return c.RenderJSON(result)
+			}
+			result["menus"] = menus
+
 			return c.RenderJSON(result)
 			//return c.Redirect(App.Dashboard)
 		} else {
