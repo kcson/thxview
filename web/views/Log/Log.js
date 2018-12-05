@@ -136,11 +136,21 @@ export default class Log extends PureComponent {
 
           response.data.hits.hits.map((row) => {
             const logDate = moment.tz(row._source['@timestamp'], moment.tz.guess());
+            let country_name = "-"
+            let city_name = "-"
+            if(row._source.geoip) {
+              if ('country_name' in row._source.geoip) {
+                country_name = row._source.geoip.country_name
+              }
+              if ('city_name' in row._source.geoip) {
+                city_name = row._source.geoip.city_name
+              }
+            }
             dataRows.push({
               accessDate: logDate.format('YYYY-MM-DD HH:mm:ss'),
               ip: row._source.clientip,
               page: row._source.request,
-              location: row._source.geoip.country_name + '(' + row._source.geoip.city_name + ')',
+              location: country_name + '(' + city_name + ')',
               os: row._source.os,
               browser: row._source.name,
               userType: row._source.member_yn === 0 ? "A Customer" : "A Member",

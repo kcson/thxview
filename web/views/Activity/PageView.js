@@ -36,7 +36,7 @@ export default class PageView extends Component {
       totalPage: 0,
       activeBlock: 1,
       totalBlock: 0,
-      pageName: ""
+      keyword: ""
     }
   }
 
@@ -54,7 +54,7 @@ export default class PageView extends Component {
   }
 
   fetchData() {
-    const {fromDate, toDate, activePage, pageName} = this.state;
+    const {fromDate, toDate, activePage, keyword} = this.state;
 
     axios({
       method: 'post',
@@ -65,7 +65,7 @@ export default class PageView extends Component {
         timeZone: moment.tz.guess(),
         from: (activePage - 1) * 10,
         size: this.ROW_PER_PAGE,
-        pageName: pageName
+        keyword: keyword
       }
     }).then(
         (response) => {
@@ -98,8 +98,8 @@ export default class PageView extends Component {
     }, this.fetchData);
   };
 
-  handlePageNameChange = (event) => {
-    this.setState({pageName: event.target.value})
+  handleKeywordChange = (event) => {
+    this.setState({keyword: event.target.value})
   };
 
 
@@ -218,8 +218,8 @@ export default class PageView extends Component {
                       <DatePicker className="form-control" selected={toDate} onChange={this.handleToDateChange} dateFormat="YYYY-MM-DD"/>
                     </FormGroup>
                     <FormGroup className="pr-1">
-                      <Label htmlFor="exampleInputEmail2" className="pr-1">Page Name</Label>
-                      <Input type="text" id="exampleInputEmail2" placeholder="/search" onChange={this.handlePageNameChange}/>
+                      <Label htmlFor="exampleInputEmail2" className="pr-1">Keyword</Label>
+                      <Input type="text" id="exampleInputEmail2" placeholder="keyword" onChange={this.handleKeywordChange}/>
                     </FormGroup>
                     <Button size="sm" color="primary" onClick={this.handleSearchClick}><i className="fa fa-dot-circle-o"></i>Search</Button>
                   </Form>
