@@ -1,3 +1,10 @@
 test-results/
 tmp/
 routes/
+web/node_modules/
+bin/
+.idea/
+log/
+.vscode/
+public/components/
+.gitignore

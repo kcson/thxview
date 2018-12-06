@@ -2,11 +2,12 @@ package controllers
 
 import (
 	"context"
+	"math"
+	"net/http"
+
 	"github.com/olivere/elastic"
 	"github.com/revel/revel"
 	"github.com/thxcloud/thxview/app/elasticsearch"
-	"math"
-	"net/http"
 )
 
 type Activity struct {
@@ -399,12 +400,20 @@ func (a Activity) PageView() revel.Result {
 	from := int(requestParams["from"].(float64))
 	size := int(requestParams["size"].(float64))
 
-	boolQuery := elastic.NewBoolQuery().Must(rangeQuery)
-	termAggs := elastic.NewTermsAggregation().Field("request.keyword").Size(10000)
-	pageName := requestParams["pageName"]
-	if pageName != nil && pageName != "" {
-		termAggs.Include(".*" + pageName.(string) + ".*")
+	boolQuery := elastic.NewBoolQuery()
+	boolQuery.Filter(rangeQuery)
+
+	//keyword 검색
+	keyWord := requestParams["keyword"]
+	if keyWord != nil && keyWord != "" {
+		matchQuery := elastic.NewMatchQuery("content", keyWord.(string)).Fuzziness("2")
+		boolQuery.Must(matchQuery)
 	}
+	termAggs := elastic.NewTermsAggregation().Field("request.keyword").Size(10000)
+	// pageName := requestParams["pageName"]
+	// if pageName != nil && pageName != "" {
+	// 	termAggs.Include(".*" + pageName.(string) + ".*")
+	// }
 
 	resultAggs, err := elasticsearch.Client.Search().
 		Index(index).

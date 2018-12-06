@@ -2,10 +2,11 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/revel/revel"
-	"github.com/thxcloud/thxview/app/db"
 	"log"
 	"net/http"
+
+	"github.com/revel/revel"
+	"github.com/thxcloud/thxview/app/db"
 )
 
 type User struct {

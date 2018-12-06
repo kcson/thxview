@@ -1,10 +1,11 @@
 package app
 
 import (
+	"fmt"
+
 	"github.com/revel/revel"
 	"github.com/thxcloud/thxview/app/db"
 	"github.com/thxcloud/thxview/app/elasticsearch"
-	"fmt"
 	"github.com/thxcloud/thxview/app/scheduler"
 )
 
@@ -16,6 +17,7 @@ var (
 	BuildTime string
 )
 
+//InitDB init DB connection
 func InitDB() {
 	db.Init()
 
@@ -26,6 +28,7 @@ func InitDB() {
 	}
 }
 
+//InitScheduler init schedule job
 func InitScheduler() {
 	scheduler.ActiveFlowJob()
 }
@@ -75,7 +78,6 @@ var CustomHeaderFilter = func(c *revel.Controller, fc []revel.Filter) {
 		trackingId = "logstash"
 	}
 	c.Params.Add("trackingId", trackingId)
-
 
 	fc[0](c, fc[1:]) // Execute the next filter stage.
 }
