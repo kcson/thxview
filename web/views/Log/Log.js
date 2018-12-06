@@ -39,6 +39,9 @@ export default class Log extends PureComponent {
       totalPage: 0,
       activeBlock: 1,
       totalBlock: 0,
+      path: "",
+      source: "",
+      osName: "",
       ascending: false
     }
   }
@@ -95,14 +98,18 @@ export default class Log extends PureComponent {
   }
 
   fetchData() {
-    const {fromDate, toDate, searchAfterDate, searchAfterId, searchBeforeDate, searchBeforeId, ascending} = this.state;
+    const {fromDate, toDate, searchAfterDate, searchAfterId, searchBeforeDate, searchBeforeId, path, source, osName, ascending} = this.state;
     let cursorDate = 0;
     let cursorId = "";
     let beforeDate = 0;
     let beforeId = "";
     let afterDate = 0;
     let afterId = "";
-
+      console.log(path);
+      console.log(fromDate);
+      console.log(toDate);
+      console.log(source);
+      console.log(osName);
     if (ascending) {
       cursorDate = searchBeforeDate;
       cursorId = searchBeforeId;
@@ -120,6 +127,9 @@ export default class Log extends PureComponent {
         searchAfterDate: cursorDate,
         searchAfterId: cursorId,
         timeZone: moment.tz.guess(),
+        path: path,
+        source: source,
+        osName: osName,
         ascending: ascending
       }
     }).then(
@@ -323,6 +333,18 @@ export default class Log extends PureComponent {
     this.setState({toDate: date})
   };
 
+  handlePathChange = (event) => {
+    this.setState({path: event.target.value})
+  };
+
+  handleSourceChange = (event) => {
+    this.setState({source: event.target.value})
+  };
+
+  handleOsNameChange = (event) => {
+    this.setState({osName: event.target.value})
+  };
+
   handleSearchClick = () => {
     this.setState({
       searchAfterDate: 0,
@@ -359,21 +381,22 @@ export default class Log extends PureComponent {
                     </FormGroup>
                     <FormGroup className="pr-1">
                       <Label htmlFor="exampleInputEmail2" className="pr-1">Page</Label>
-                      <Input type="text" id="exampleInputEmail2" placeholder="www.example.com"/>
+                      <Input type="text" id="exampleInputEmail2" placeholder="www.example.com" onChange={this.handlePathChange}/>
                     </FormGroup>
                     <FormGroup className="pr-1">
                       <Label htmlFor="exampleInputEmail2" className="pr-1">Source</Label>
-                      <Input type="text" id="exampleInputEmail2" placeholder="www.google.com"/>
+                      <Input type="text" id="exampleInputEmail2" placeholder="www.google.com" onChange={this.handleSourceChange}/>
                     </FormGroup>
                     <FormGroup className="pr-1">
                       <Label htmlFor="ccmonth" className="pr-1">OS</Label>
-                      <Input type="select" name="ccmonth" id="ccmonth">
-                        <option value="0">-</option>
-                        <option value="1">Windows</option>
-                        <option value="2">Mac</option>
-                        <option value="3">Linux</option>
-                        <option value="4">iOS</option>
-                        <option value="5">Android</option>
+                      <Input type="select" name="ccmonth" id="ccmonth" onChange={this.handleOsNameChange}>
+                        <option value="">-</option>
+                        <option value="Windows">Windows</option>
+                        <option value="Mac">Mac</option>
+                        <option value="Linux">Linux</option>
+                        <option value="iOS">iOS</option>
+                        <option value="Android">Android</option>
+                        <option value="Other">Other</option>
                       </Input>
                     </FormGroup>
                     <Button size="sm" color="primary" onClick={this.handleSearchClick}><i className="fa fa-dot-circle-o"></i>Search</Button>
