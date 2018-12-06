@@ -3,10 +3,9 @@ package controllers
 import (
 	"context"
 	"fmt"
+
 	"github.com/revel/revel"
-	"github.com/thxcloud/thxview/app/db"
 	"github.com/thxcloud/thxview/app/mapper"
-	"log"
 )
 
 type App struct {
@@ -40,38 +39,12 @@ func (c App) CreateSession() revel.Result {
 
 	//Login Check start
 	if username != nil && password != nil {
-		rows, err := db.DB.QueryxContext(ctx, "SELECT id,password,role,username FROM thx_employee WHERE id=?", username)
+		items, err := mapper.SelectUserInfoByID(username.(string))
 		if err != nil {
-			log.Fatal(err)
+			result["auth"] = "fail"
+			result["message"] = "Your name is required!"
+			return c.Redirect(App.Index)
 		}
-		defer rows.Close()
-
-		type userInfo struct {
-			Id       string `db:"id"`
-			Password string `db:"password"`
-			Role     int    `db:"role"`
-			Username string `db:"username"`
-		}
-
-		var items []userInfo
-		for rows.Next() {
-			item := userInfo{}
-
-			err := rows.StructScan(&item)
-			CheckErr(err)
-
-			revel.AppLog.Infof("Item id : %s", item.Id)
-			revel.AppLog.Infof("Item password : %s", item.Password)
-			revel.AppLog.Infof("Item role : %d", item.Role)
-			revel.AppLog.Infof("Item username : %s", item.Username)
-
-			items = append(items, item)
-		}
-
-		if err != nil {
-			revel.INFO.Println("DB Error", err)
-		}
-
 		if len(items) == 0 {
 			return c.Redirect(App.Index)
 		}
@@ -85,7 +58,7 @@ func (c App) CreateSession() revel.Result {
 			result["user_name"] = items[0].Username
 
 			//관리 사이트
-			sites, err := mapper.SelectUserSiteByUserId(username.(string))
+			sites, err := mapper.SelectUserSiteByUserID(username.(string))
 			if err != nil {
 				revel.AppLog.Error(err.Error())
 				return c.RenderJSON(result)
@@ -93,7 +66,7 @@ func (c App) CreateSession() revel.Result {
 			result["sites"] = sites
 
 			//권한이 있는 메뉴
-			menus, err := mapper.SelectUserMenuByUserId(username.(string))
+			menus, err := mapper.SelectUserMenuByUserID(username.(string))
 			if err != nil {
 				revel.AppLog.Error(err.Error())
 				return c.RenderJSON(result)

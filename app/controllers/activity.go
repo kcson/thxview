@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"encoding/json"
 	"math"
 	"net/http"
 
@@ -22,12 +23,14 @@ type VisitUser struct {
 	New      int `json:"new"`
 }
 
+//TopPage ...
 type TopPage struct {
-	Index int     `json:"index"`
-	Page  string  `json:"page"`
-	Desc  string  `json:"desc"`
-	Count int     `json:"count"`
-	Ratio float64 `json:"ratio"`
+	Index   int     `json:"index"`
+	Page    string  `json:"page"`
+	Desc    string  `json:"desc"`
+	Count   int     `json:"count"`
+	Ratio   float64 `json:"ratio"`
+	Content string  `json:"content"`
 }
 
 type Purchase struct {
@@ -373,6 +376,7 @@ func (a Activity) SummaryPurchase() revel.Result {
 	return a.RenderJSON(result)
 }
 
+//PageView ...
 func (a Activity) PageView() revel.Result {
 	index := a.Params.Get("trackingId") + "-*"
 
@@ -406,7 +410,7 @@ func (a Activity) PageView() revel.Result {
 	//keyword 검색
 	keyWord := requestParams["keyword"]
 	if keyWord != nil && keyWord != "" {
-		matchQuery := elastic.NewMatchQuery("content", keyWord.(string)).Fuzziness("2")
+		matchQuery := elastic.NewMatchQuery("content", keyWord.(string)) //.Fuzziness("2")
 		boolQuery.Must(matchQuery)
 	}
 	termAggs := elastic.NewTermsAggregation().Field("request.keyword").Size(10000)
@@ -440,6 +444,7 @@ func (a Activity) PageView() revel.Result {
 		return a.RenderJSON(result)
 	}
 
+	fetchSourcCtx := elastic.NewFetchSourceContext(true).Include("title", "content")
 	for i := from; i < from+size; i++ {
 		if i >= totalPage {
 			break
@@ -451,9 +456,44 @@ func (a Activity) PageView() revel.Result {
 		t.Page = pvBucket.Key.(string)
 		t.Count = int(pvBucket.DocCount)
 		t.Desc = "-"
-
 		t.Ratio = math.Round(float64(t.Count)/float64(totalHits)*100*100) / 100
+		t.Content = "-"
 
+		//page 중 가장 최신 페이지 Query
+		termQuery := elastic.NewTermQuery("request.keyword", t.Page)
+		boolQuery := elastic.NewBoolQuery().Filter(termQuery)
+		result, err := elasticsearch.Client.Search().
+			Index(index).
+			Query(boolQuery).
+			FetchSourceContext(fetchSourcCtx).
+			Sort("@timestamp", false).
+			Size(1).
+			Do(ctx)
+		if err != nil {
+			revel.AppLog.Error(err.Error())
+			tTotal = append(tTotal, t)
+			continue
+		}
+		if result.Hits.TotalHits == 0 {
+			continue
+		}
+		hitMap := make(map[string]interface{})
+		for _, hit := range result.Hits.Hits {
+			err := json.Unmarshal(*hit.Source, &hitMap)
+			if err != nil {
+				tTotal = append(tTotal, t)
+				continue
+			}
+			title := hitMap["title"]
+			if title != nil {
+				t.Desc = title.(string)
+			}
+			content := hitMap["content"]
+			if content != nil {
+				t.Content = content.(string)
+				break
+			}
+		}
 		tTotal = append(tTotal, t)
 	}
 
