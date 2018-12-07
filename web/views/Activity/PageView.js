@@ -222,8 +222,6 @@ export default class PageView extends Component {
 
   render() {
     const {fromDate, toDate, page, content} = this.state;
-    const backDrop = {overflow: 'auto'};
-    const highlights = {whiteSpace: 'pre-wrap',wordWrap: 'break-word'};
     return (
         <div className="animated fadeIn">
           <Row>
