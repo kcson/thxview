@@ -515,59 +515,96 @@ class ReportGenerate extends Component {
     this.fetchPurchase();
   };
 
-  render() {
+  renderCustomFilter = () => {
+    const {fromDate, toDate} = this.state;
+    const menus = sessionStorage.menus;
+    let mArray = [];
+    if (menus) {
+      mArray = JSON.parse(menus);
+    }
     const options = [
       {value: '1', label: 'PlaSkin'},
       {value: '2', label: 'PlaSkin Plus'},
       {value: '3', label: 'PlaBeau'}
     ];
+    if (mArray.includes('M_REPORT_MANAGEMENT')) {
+      return (
+          <Col xs="12" lg="12">
+            <Card style={{marginBottom: 15 + 'px'}}>
+              <CardHeader>
+                <Form inline>
+                  <FormGroup className="pr-1">
+                    <Label htmlFor="exampleInputEmail2" className="pr-1">Title</Label>
+                    <Input type="text" id="exampleInputEmail2" onChange={this.handleTitleChange}
+                           required/>
+                  </FormGroup>
+                  <FormGroup className="pr-1">
+                    <Label htmlFor="exampleInputName2" className="pr-1">Report for User
+                      Activity</Label>
+                    <DatePicker className="form-control" selected={fromDate} onChange={this.handleFromDateChange} dateFormat="YYYY-MM-DD"/>
+                    ~
+                    <DatePicker className="form-control" selected={toDate} onChange={this.handleToDateChange} dateFormat="YYYY-MM-DD"/>
+                  </FormGroup>
+                  <FormGroup className="pr-1">
+                    <Label htmlFor="exampleInputEmail2" className="pr-1">Description</Label>
+                    <Input type="text" id="exampleInputEmail2" onChange={this.handleDescChange}/>
+                  </FormGroup>
+                </Form>
+                <Form inline className="mt-2">
+                  <FormGroup className="pr-1" style={{width: 75 + '%'}}>
+                    <Label htmlFor="exampleInputEmail2" className="pr-1">Include custom information</Label>
+                    <div style={{width: 60 + '%'}}>
+                      <Select isMulti options={options} defaultValue={{value: '1', label: 'PlaSkin'}}/>
+                    </div>
+                  </FormGroup>
+                  <Button size="sm" color="primary" className="mr-1" style={{marginLeft: 'auto'}} onClick={this.handleClickCreateBtn}><i
+                      className="fa fa-dot-circle-o"></i>Create & View</Button>
+                  <Button size="sm" color="primary" className="mr-1"><i className="fa fa-dot-circle-o"></i>Add Report</Button>
+                  <Button outline={true} size="sm" color="primary" onClick={this.exportPdf}><i className="fa fa-file-pdf-o"></i>Save PDF</Button>
+                </Form>
+              </CardHeader>
+            </Card>
+          </Col>
+      )
+    } else {
+      return (
+          <Col xs="12" lg="12">
+            <Card style={{marginBottom: 15 + 'px'}}>
+              <CardHeader>
+                <Form inline>
+                  <FormGroup className="pr-1">
+                    <Label htmlFor="exampleInputEmail2" className="pr-1">Title</Label>
+                    <Input type="text" id="exampleInputEmail2" onChange={this.handleTitleChange}
+                           required/>
+                  </FormGroup>
+                  <FormGroup className="pr-1">
+                    <Label htmlFor="exampleInputName2" className="pr-1">Report for User
+                      Activity</Label>
+                    <DatePicker className="form-control" selected={fromDate} onChange={this.handleFromDateChange} dateFormat="YYYY-MM-DD"/>
+                    ~
+                    <DatePicker className="form-control" selected={toDate} onChange={this.handleToDateChange} dateFormat="YYYY-MM-DD"/>
+                  </FormGroup>
+                  <FormGroup className="pr-1">
+                    <Label htmlFor="exampleInputEmail2" className="pr-1">Description</Label>
+                    <Input type="text" id="exampleInputEmail2" onChange={this.handleDescChange}/>
+                  </FormGroup>
+                  <Button size="sm" color="primary" className="mr-1" style={{marginLeft: 'auto'}} onClick={this.handleClickCreateBtn}><i
+                      className="fa fa-dot-circle-o"></i>Create & View</Button>
+                  <Button outline={true} size="sm" color="primary" onClick={this.exportPdf}><i className="fa fa-file-pdf-o"></i>Save PDF</Button>
+                </Form>
+              </CardHeader>
+            </Card>
+          </Col>
+      )
+    }
+  };
+
+  render() {
     const {visitUser, visitChangeChart, fromDate, toDate, title, desc} = this.state;
     return (
         <div className="animated fadeIn">
           <Row>
-            <Col xs="12" lg="12">
-              <Card style={{marginBottom: 15 + 'px'}}>
-                <CardHeader>
-                  <Form inline>
-                    <FormGroup className="pr-1">
-                      <Label htmlFor="exampleInputEmail2" className="pr-1">Title</Label>
-                      <Input type="text" id="exampleInputEmail2" onChange={this.handleTitleChange}
-                             required/>
-                    </FormGroup>
-                    <FormGroup className="pr-1">
-                      <Label htmlFor="exampleInputName2" className="pr-1">Report for User
-                        Activity</Label>
-                      <DatePicker className="form-control" selected={fromDate}
-                                  onChange={this.handleFromDateChange} dateFormat="YYYY-MM-DD"/>
-                      ~
-                      <DatePicker className="form-control" selected={toDate}
-                                  onChange={this.handleToDateChange} dateFormat="YYYY-MM-DD"/>
-                    </FormGroup>
-                    <FormGroup className="pr-1">
-                      <Label htmlFor="exampleInputEmail2" className="pr-1">Description</Label>
-                      <Input type="text" id="exampleInputEmail2" onChange={this.handleDescChange}/>
-                    </FormGroup>
-                  </Form>
-                  <Form inline className="mt-2">
-                    <FormGroup className="pr-1" style={{width: 75 + '%'}}>
-                      <Label htmlFor="exampleInputEmail2" className="pr-1">Include custom
-                        information</Label>
-                      <div style={{width: 60 + '%'}}>
-                        <Select isMulti options={options}
-                                defaultValue={{value: '1', label: 'PlaSkin'}}/>
-                      </div>
-                    </FormGroup>
-                    <Button size="sm" color="primary" className="mr-1" style={{marginLeft: 'auto'}}
-                            onClick={this.handleClickCreateBtn}><i
-                        className="fa fa-dot-circle-o"></i>Create & View</Button>
-                    <Button size="sm" color="primary" className="mr-1"><i
-                        className="fa fa-dot-circle-o"></i>Add Report</Button>
-                    <Button outline={true} size="sm" color="primary" onClick={this.exportPdf}><i
-                        className="fa fa-file-pdf-o"></i>Save PDF</Button>
-                  </Form>
-                </CardHeader>
-              </Card>
-            </Col>
+            {this.renderCustomFilter()}
           </Row>
           <div id="exportReport">
             <Card className='border-0'>
