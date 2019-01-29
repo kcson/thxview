@@ -36,7 +36,7 @@ type Browser struct {
 }
 
 func (i Information) SummaryOS() revel.Result {
-	index := i.Params.Get("trackingId") + "-*"
+	index := i.Params.Get("trackingId") + "*"
 
 	result := make(map[string]interface{})
 	authKey, ok := i.Session["authKey"]
@@ -121,7 +121,7 @@ func (i Information) SummaryOS() revel.Result {
 }
 
 func (i Information) SummaryBrowser() revel.Result {
-	index := i.Params.Get("trackingId") + "-*"
+	index := i.Params.Get("trackingId") + "*"
 
 	result := make(map[string]interface{})
 	authKey, ok := i.Session["authKey"]
@@ -170,7 +170,7 @@ func (i Information) SummaryBrowser() revel.Result {
 }
 
 func (i Information) TrafficSource() revel.Result {
-	index := i.Params.Get("trackingId") + "-*"
+	index := i.Params.Get("trackingId") + "*"
 
 	result := make(map[string]interface{})
 	authKey, ok := i.Session["authKey"]
@@ -258,7 +258,7 @@ func (i Information) TrafficSource() revel.Result {
 }
 
 func (i Information) OS() revel.Result {
-	index := i.Params.Get("trackingId") + "-*"
+	index := i.Params.Get("trackingId") + "*"
 
 	result := make(map[string]interface{})
 	authKey, ok := i.Session["authKey"]
@@ -345,7 +345,7 @@ func (i Information) OS() revel.Result {
 }
 
 func (i Information) Browser() revel.Result {
-	index := i.Params.Get("trackingId") + "-*"
+	index := i.Params.Get("trackingId") + "*"
 
 	result := make(map[string]interface{})
 	authKey, ok := i.Session["authKey"]
@@ -432,7 +432,7 @@ func (i Information) Browser() revel.Result {
 }
 
 func (i Information) Location() revel.Result {
-	index := i.Params.Get("trackingId") + "-*"
+	index := i.Params.Get("trackingId") + "*"
 
 	result := make(map[string]interface{})
 	authKey, ok := i.Session["authKey"]

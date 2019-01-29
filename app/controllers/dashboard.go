@@ -2,13 +2,14 @@ package controllers
 
 import (
 	"context"
-	"github.com/olivere/elastic"
-	"github.com/revel/revel"
-	"github.com/thxcloud/thxview/app/elasticsearch"
 	"math"
 	"net/http"
 	"strings"
 	"sync"
+
+	"github.com/olivere/elastic"
+	"github.com/revel/revel"
+	"github.com/thxcloud/thxview/app/elasticsearch"
 )
 
 type Dashboard struct {
@@ -23,7 +24,7 @@ type ActiveLocation struct {
 
 func (d Dashboard) ActiveUser() revel.Result {
 	trackingId := d.Params.Get("trackingId")
-	index := trackingId + "-*"
+	index := trackingId + "*"
 
 	result := make(map[string]interface{})
 	authKey, ok := d.Session["authKey"]
@@ -121,7 +122,7 @@ func (d Dashboard) ActiveUser() revel.Result {
 }
 
 func (d Dashboard) PageView() revel.Result {
-	index := d.Params.Get("trackingId") + "-*"
+	index := d.Params.Get("trackingId") + "*"
 
 	result := make(map[string]interface{})
 	authKey, ok := d.Session["authKey"]
@@ -161,7 +162,7 @@ func (d Dashboard) PageView() revel.Result {
 }
 
 func (d Dashboard) Conversion() revel.Result {
-	index := d.Params.Get("trackingId") + "-*"
+	index := d.Params.Get("trackingId") + "*"
 
 	result := make(map[string]interface{})
 	authKey, ok := d.Session["authKey"]
@@ -203,7 +204,13 @@ func (d Dashboard) Conversion() revel.Result {
 			//return d.RenderJSON(result)
 		}
 		aggsValue, _ := visitUsers.Aggregations.Cardinality("visit_user")
-		totalCount = int(*aggsValue.Value)
+		//totalCount = int(*aggsValue.Value)
+
+		if aggsValue == nil {
+			totalCount = 0
+		} else {
+			totalCount = int(*aggsValue.Value)
+		}
 		//result["visit_user"] = totalCount
 	}()
 
@@ -224,7 +231,12 @@ func (d Dashboard) Conversion() revel.Result {
 			//return d.RenderJSON(result)
 		}
 		aggsValue, _ := signUpUsers.Aggregations.Cardinality("signup_user")
-		signupCount = int(*aggsValue.Value)
+		if aggsValue == nil {
+			signupCount = 0
+		} else {
+			signupCount = int(*aggsValue.Value)
+		}
+
 	}()
 
 	wg.Wait()
@@ -242,7 +254,7 @@ func (d Dashboard) Conversion() revel.Result {
 }
 
 func (d Dashboard) Purchase() revel.Result {
-	index := d.Params.Get("trackingId") + "-*"
+	index := d.Params.Get("trackingId") + "*"
 
 	result := make(map[string]interface{})
 	authKey, ok := d.Session["authKey"]
@@ -324,7 +336,7 @@ func (d Dashboard) Purchase() revel.Result {
 }
 
 func (d Dashboard) TopPage() revel.Result {
-	index := d.Params.Get("trackingId") + "-*"
+	index := d.Params.Get("trackingId") + "*"
 
 	result := make(map[string]interface{})
 	authKey, ok := d.Session["authKey"]
@@ -378,7 +390,7 @@ func (d Dashboard) TopPage() revel.Result {
 }
 
 func (d Dashboard) Inflow() revel.Result {
-	index := d.Params.Get("trackingId") + "-*"
+	index := d.Params.Get("trackingId") + "*"
 
 	result := make(map[string]interface{})
 	authKey, ok := d.Session["authKey"]
@@ -416,7 +428,7 @@ func (d Dashboard) Inflow() revel.Result {
 }
 
 func (d Dashboard) Location() revel.Result {
-	index := d.Params.Get("trackingId") + "-*"
+	index := d.Params.Get("trackingId") + "*"
 
 	result := make(map[string]interface{})
 	authKey, ok := d.Session["authKey"]

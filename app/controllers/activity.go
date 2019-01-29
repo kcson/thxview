@@ -43,7 +43,7 @@ type Purchase struct {
 }
 
 func (a Activity) SummaryVisitUser() revel.Result {
-	index := a.Params.Get("trackingId") + "-*"
+	index := a.Params.Get("trackingId") + "*"
 
 	result := make(map[string]interface{})
 	authKey, ok := a.Session["authKey"]
@@ -114,7 +114,7 @@ func (a Activity) SummaryVisitUser() revel.Result {
 }
 
 func (a Activity) SummaryVisitChange() revel.Result {
-	index := a.Params.Get("trackingId") + "-*"
+	index := a.Params.Get("trackingId") + "*"
 
 	result := make(map[string]interface{})
 	authKey, ok := a.Session["authKey"]
@@ -204,7 +204,7 @@ func (a Activity) SummaryVisitChange() revel.Result {
 }
 
 func (a Activity) SummaryTopPage() revel.Result {
-	index := a.Params.Get("trackingId") + "-*"
+	index := a.Params.Get("trackingId") + "*"
 
 	result := make(map[string]interface{})
 	authKey, ok := a.Session["authKey"]
@@ -259,7 +259,7 @@ func (a Activity) SummaryTopPage() revel.Result {
 }
 
 func (a Activity) SummarySignUp() revel.Result {
-	index := a.Params.Get("trackingId") + "-*"
+	index := a.Params.Get("trackingId") + "*"
 
 	result := make(map[string]interface{})
 	authKey, ok := a.Session["authKey"]
@@ -318,7 +318,7 @@ func (a Activity) SummarySignUp() revel.Result {
 }
 
 func (a Activity) SummaryPurchase() revel.Result {
-	index := a.Params.Get("trackingId") + "-*"
+	index := a.Params.Get("trackingId") + "*"
 
 	result := make(map[string]interface{})
 	authKey, ok := a.Session["authKey"]
@@ -378,7 +378,7 @@ func (a Activity) SummaryPurchase() revel.Result {
 
 //PageView ...
 func (a Activity) PageView() revel.Result {
-	index := a.Params.Get("trackingId") + "-*"
+	index := a.Params.Get("trackingId") + "*"
 
 	result := make(map[string]interface{})
 	authKey, ok := a.Session["authKey"]
@@ -502,7 +502,7 @@ func (a Activity) PageView() revel.Result {
 }
 
 func (a Activity) Purchase() revel.Result {
-	index := a.Params.Get("trackingId") + "-*"
+	index := a.Params.Get("trackingId") + "*"
 
 	result := make(map[string]interface{})
 	authKey, ok := a.Session["authKey"]

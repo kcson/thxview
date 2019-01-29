@@ -14,7 +14,7 @@ type Log struct {
 }
 
 func (l Log) SearchLog() revel.Result {
-	index := l.Params.Get("trackingId") + "-*"
+	index := l.Params.Get("trackingId") + "*"
 
 	//session check
 	result := make(map[string]interface{})
